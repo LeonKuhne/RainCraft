@@ -88,10 +88,12 @@ public class Cloud {
 	}
         
         // reset delta
-        delta.setX(0);
-        delta.setY(0);
-        delta.setZ(0);
-	moved = false;
+	if (moved) {
+	    delta.setX(0);
+	    delta.setY(0);
+            delta.setZ(0);
+	    moved = false;
+	}
     }
         
     public void tick() {
@@ -166,7 +168,7 @@ public class Cloud {
 	    moved = true;
 	    System.out.println("cloud moved");
 	} else {
-	    System.out.println(".");
+	    System.out.println("cloud stationary: " + delta);
 	}
     }
 
