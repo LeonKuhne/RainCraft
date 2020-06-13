@@ -52,7 +52,7 @@ public class Cloud {
     
     public Cloud(Plugin plugin, Player player, Map<String, Double> factors) {
        	this(plugin, RainUtil.cloudAbove(player));
-	this.creator = creator;
+	this.creator = player;
         if (factors != null) { growFactors.putAll(factors); }
     }
     
