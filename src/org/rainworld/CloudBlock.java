@@ -154,7 +154,7 @@ public class CloudBlock {
             }   
         }
 
-	System.out.println("found neighbors");
+	System.out.println("found neighbors" + neighbors);
         
         return neighbors;
     }
