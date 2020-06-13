@@ -79,7 +79,7 @@ public class Cloud {
     }
     
     public void draw() {
-	for (int i=0; i<cloudBlock.size(); i++) {
+	for (int i=0; i<cloudBlocks.size(); i++) {
 		cloudBlocks.get(i).draw();
 	}
         
