@@ -50,7 +50,7 @@ public class Cloud {
     private List<BukkitTask> tasks;
             
     
-    public Cloud(Plugin plugin, Player creator, Map<String, Double> factors) {
+    public Cloud(Plugin plugin, Player player, Map<String, Double> factors) {
        	this(plugin, RainUtil.cloudAbove(player));
 	this.creator = creator;
         if (factors != null) { growFactors.putAll(factors); }
