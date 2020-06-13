@@ -73,10 +73,8 @@ public class CloudBlock {
         if (!RainUtil.isCloud(cloudBlock) && RainUtil.isAir(cloudBlock)) {
             cloudBlock.setType(Material.WHITE_WOOL);
             cloudBlock.setMetadata("cloud", new FixedMetadataValue(cloud.plugin, true));
-	    System.out.println("placed cloud block");
             return true;
         }
-	System.out.println("failed to placed cloud block");
         
         return false;
     }
