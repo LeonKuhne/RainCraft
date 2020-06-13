@@ -10,6 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
+import java.lang.Math;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author lxk1170
@@ -63,8 +65,10 @@ public class Cloud {
 
         loc = origin.getBlock().getLocation().clone();
         delta = new Location(origin.getWorld(), 0, 0, 0);
-        
-        speed = 1.0;
+
+	int direction = ThreadLocalRandom.current().nextInt(0, 360);
+	int speed = Math.random();
+	setDirection(direction, speed);
         spawning = true;
         moved = true; // moved into existance, thus draw
         
@@ -125,7 +129,7 @@ public class Cloud {
             if (result > threshold) {
                 if (cloudBlocks.size() < MAX_SIZE) {
                     cloudBlocks.add(new CloudBlock(this, neighbor));
-	    	    notify("Cloud grew: added " + neighbor);
+	    	    notify("Cloud grew");
                 } else {
 	    	    notify("Max cloud size reached: " + MAX_SIZE);
 		}
