@@ -76,7 +76,11 @@ public class RainUtil {
         below.add(0, -1, 0);
         return isAir(below);
     }
-    
+ 
+    public static Location cloudAbove(Player player) {
+	return cloudAbove(player.getLocation());
+    }   
+
     public static Location cloudAbove(Location loc) {
         Location cloudLoc = loc.clone();
         int height = CLOUD_HEIGHT + (int) Math.round(Math.random() * CLOUD_VARIANCE);

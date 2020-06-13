@@ -79,12 +79,9 @@ public class RainBlock extends JavaPlugin {
         Location playerLocation = player.getLocation();
         player.sendMessage("You are at " + playerLocation);
 
-        // get new cloud location
-        Location cloudLocation = RainUtil.cloudAbove(playerLocation);
-
-        // place a cloud
+	// place a cloud
         player.sendMessage("Placing a cloud above you " + player.getDisplayName());
-        clouds.add(new Cloud(this, cloudLocation, cloudFactors));
+        clouds.add(new Cloud(this, player, cloudFactors));
     }
     
     private Map<String, Double> parseCommand(String[] args){
