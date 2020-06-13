@@ -123,7 +123,7 @@ public class Cloud {
             if (result > threshold) {
                 if (cloudBlocks.size() < MAX_SIZE) {
                     cloudBlocks.add(new CloudBlock(this, neighbor));
-	    	    notify("Cloud grew: added ", neighbor);
+	    	    notify("Cloud grew: added " + neighbor);
                 } else {
 	    	    notify("Max cloud size reached: " + MAX_SIZE);
 		}
