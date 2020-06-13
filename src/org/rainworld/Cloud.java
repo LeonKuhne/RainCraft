@@ -80,7 +80,6 @@ public class Cloud {
     
     public void draw() {
 	for (int i=0; i<cloudBlocks.size(); i++) {
-	    System.out.println(i);
 	    cloudBlocks.get(i).draw();
 	}
         
