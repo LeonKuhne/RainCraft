@@ -28,7 +28,7 @@ echo -e "$src_files" | awk '{ print "compiling... " $0 }'
 echo -en "\e[32m"
 
 # add config to jar (plugin.yml)
-jar -cvf "$rain_dist/RainCraft.jar" plugin.yml
+jar -cf "$rain_dist/RainCraft.jar" plugin.yml
 
 # create .class files
 javac -cp $rain_lib/*.jar $src_files -d $rain_build
@@ -45,7 +45,7 @@ echo -en "\e[33m"
 echo -e "$src_files" | awk '{ print "compressing... " $0 }'
 echo -en "\e[32m"
 
-jar -uvf "$rain_dist/RainCraft.jar" $class_files
+jar -uf "$rain_dist/RainCraft.jar" $class_files
 echo -en "\e[37m"
 
 cd $old_dir

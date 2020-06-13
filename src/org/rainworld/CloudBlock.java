@@ -136,14 +136,13 @@ public class CloudBlock {
     public Map<Location, Double> freeNeighbors(Map<String, Double> factors) {
         Map<Location, Double> neighbors = new HashMap();
         Location loc = getLoc();
-        Location zeroOffset = new Location(RainUtil.getOverworld(), 0, 0, 0);
         
         // find neighbors
         for (int y=-1; y<=1; y++) {             //     then move up to next layer
             for (int z=-1; z<=1; z++) {         //   then add z axis, completing pane ^
                 for (int x=-1; x<=1; x++) {     // x axis first ^
-                    Location neighborOffset = zeroOffset.clone();
-                    neighborOffset.add(offset); // make relative to origin
+                    Location neighborOffset = offset.clone();
+		    neighborOffset.add(x, y, z);
 		    System.out.println("looking for neighbor at: " + neighborOffset);
                     
                     // test if free
