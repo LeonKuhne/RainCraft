@@ -48,10 +48,7 @@ public class CloudBlock {
     public void draw() {
         Location loc = getLoc();
         
-	System.out.println("[moved:" + cloud.moved + "] drawing at: " + loc);
         if (cloud.moved) {
-            cloud.moved = false;
-            
             // place new and remove old cloud blocks from world
             if (!placeBlock()) { cloud.cloudBlocks.remove(this); }
             if (!RainUtil.sameBlock(lastLoc(), loc)) { destroy(); }

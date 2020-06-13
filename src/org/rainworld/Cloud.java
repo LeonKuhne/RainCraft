@@ -85,6 +85,7 @@ public class Cloud {
         delta.setX(0);
         delta.setY(0);
         delta.setZ(0);
+	moved = false;
     }
         
     public void tick() {
