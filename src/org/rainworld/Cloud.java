@@ -120,8 +120,6 @@ public class Cloud {
 
             // roll dice
 	    double result = RainUtil.rollDice(blockY, cloudHeight, factor);
-	    }
-
             if (result > threshold) {
                 if (cloudBlocks.size() < MAX_SIZE) {
                     cloudBlocks.add(new CloudBlock(this, neighbor));
