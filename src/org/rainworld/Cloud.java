@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.bukkit.Location;
+import org.bukkit.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
@@ -29,6 +30,7 @@ public class Cloud {
     
     // vars
     protected Plugin plugin;
+    protected Player creator;
     protected List<CloudBlock> cloudBlocks;
     protected boolean spawning;
     protected Location loc; // (origin block) cloud location
@@ -48,8 +50,9 @@ public class Cloud {
     private List<BukkitTask> tasks;
             
     
-    public Cloud(Plugin plugin, Location origin, Map<String, Double> factors) {
-        this(plugin, origin);
+    public Cloud(Plugin plugin, Player creator, Map<String, Double> factors) {
+        this(plugin, creator.getLocation());
+	this.creator = creator;
         if (factors != null) { growFactors.putAll(factors); }
     }
     
@@ -93,8 +96,10 @@ public class Cloud {
         }
     }
     
-    public void trySpawnNeighbor(List<String> growFactors) {
-        
+    private void notify(String message) {
+    	if (creator != null) {
+	    creator.sendMessage(message);
+	}
     }
      
     // spawn more cloudblocks
@@ -110,16 +115,23 @@ public class Cloud {
         
         // try to spawn on free spaces
         freeBlocks.forEach((neighbor, factor) -> {
-	    System.out.println(factor);
             int cloudHeight = (neighbor.getBlockY() - RainUtil.getGroundAt(neighbor).getBlockY());
             int blockY = loc.getBlockY()+neighbor.getBlockY();
 
             // roll dice
-            if (RainUtil.isChosen(blockY, cloudHeight, factor, threshold)) {
+	    double result = RainUtil.rollDice(blockY, cloudHeight, factor);
+	    }
+
+            if (result > threshold) {
                 if (cloudBlocks.size() < MAX_SIZE) {
                     cloudBlocks.add(new CloudBlock(this, neighbor));
-                }
-            }
+	    	    notify("Cloud grew");
+                } else {
+	    	    notify("Max cloud size reached: " + MAX_SIZE);
+		}
+            } else {
+		notify("Failed growing, threshold: " + threshold);
+	    }
         });
         
     }

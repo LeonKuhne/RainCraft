@@ -90,21 +90,25 @@ public class RainUtil {
     public static void debug(Location loc) {
         loc.getBlock().setType(Material.REDSTONE_BLOCK);
     }
-    
-    public static boolean isChosen(double cloudHeight, double floorHeight, double extraFactor, double threshold) {
+
+    public static double rollDice(double cloudHeight, double floorHeight, double extraFactor) {
         double percentWorldHeight = cloudHeight/(getOverworld().getMaxHeight());
         double percentCloudHeight = Math.abs(floorHeight / CLOUD_HEIGHT);
         
-        // modify & create factors
+        // create factors
         double diceFactor = Math.random();
         double heightFactor = Math.pow(percentWorldHeight, 0.2);
         double floorFactor = Math.min(Math.pow(percentCloudHeight, 0.5), 1.1);  // range from 0-1.5;
-        
-        double result = (diceFactor * heightFactor * floorFactor * extraFactor);
-        return result > threshold;
+
+        return (diceFactor * heightFactor * floorFactor * extraFactor);
+    }
+
+    // extraFactor is used for growing clouds
+    public static boolean isChosen(double cloudHeight, double floorHeight, double extraFactor, double threshold) {
+        return rollDice(cloudHeight, floorHeight, extraFactor) > threshold;
     }
     
-    // percentHeight is from 0-1
+    // percentHeight is from 0-1 // for spawning new clouds
     public static boolean isChosen(double cloudHeight, double floorHeight, double threshold) {
         return isChosen(cloudHeight, floorHeight, 1, threshold);
     }
