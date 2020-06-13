@@ -69,8 +69,7 @@ public class Cloud {
         moved = true; // moved into existance, thus draw
         
         // add the start block
-        CloudBlock startBlock = new CloudBlock(this);
-        cloudBlocks.add(startBlock);
+        cloudBlocks.add(new CloudBlock(this));
         
         tasks = new ArrayList();                                                // threads          
         BukkitScheduler scheduler = plugin.getServer().getScheduler();
