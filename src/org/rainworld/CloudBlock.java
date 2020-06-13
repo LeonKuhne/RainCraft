@@ -121,11 +121,15 @@ public class CloudBlock {
     //
     
     private Location getLoc() {
-        return cloud.loc.clone().add(offset);
+        Location loc = cloud.loc.clone();
+	loc.add(offset);
+	return loc;
     }
     
     private Location lastLoc() {
-        return getLoc().subtract(cloud.delta);
+	Location lastLoc = getLoc();
+	lastLoc.subtract(cloud.delta);
+	return lastLoc;
     }
     
     /**
