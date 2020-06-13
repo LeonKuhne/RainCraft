@@ -80,7 +80,8 @@ public class Cloud {
     
     public void draw() {
 	for (int i=0; i<cloudBlocks.size(); i++) {
-		cloudBlocks.get(i).draw();
+	    System.out.println(i);
+	    cloudBlocks.get(i).draw();
 	}
         
         // reset delta
