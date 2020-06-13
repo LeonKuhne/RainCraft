@@ -47,8 +47,8 @@ public class CloudBlock {
     
     public void draw() {
         Location loc = getLoc();
-	System.out.println("drawing at: " + loc);
         
+	System.out.println("[moved:" + cloud.moved + "] drawing at: " + loc);
         if (cloud.moved) {
             cloud.moved = false;
             
