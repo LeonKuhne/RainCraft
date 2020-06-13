@@ -153,6 +153,8 @@ public class CloudBlock {
                 }
             }   
         }
+
+	System.out.println("found neighbors");
         
         return neighbors;
     }
