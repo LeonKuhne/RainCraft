@@ -113,7 +113,7 @@ public class Cloud {
             freeBlocks.putAll(neighbors);
         }
         
-        // try to spawn on free spaces
+        // try to spawn on free space
         freeBlocks.forEach((neighbor, factor) -> {
             int cloudHeight = (neighbor.getBlockY() - RainUtil.getGroundAt(neighbor).getBlockY());
             int blockY = loc.getBlockY()+neighbor.getBlockY();
@@ -123,13 +123,11 @@ public class Cloud {
             if (result > threshold) {
                 if (cloudBlocks.size() < MAX_SIZE) {
                     cloudBlocks.add(new CloudBlock(this, neighbor));
-	    	    notify("Cloud grew");
+	    	    notify("Cloud grew: added ", neighbor);
                 } else {
 	    	    notify("Max cloud size reached: " + MAX_SIZE);
 		}
-            } else {
-		notify("Failed growing, threshold: " + threshold);
-	    }
+            }
         });
         
     }
