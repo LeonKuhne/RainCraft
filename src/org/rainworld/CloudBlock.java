@@ -18,7 +18,6 @@ import static org.rainworld.RainUtil.isAir;
 import static org.rainworld.RainUtil.isCloud;
 
 /**
- *
  * @author lxk1170
  */
 public class CloudBlock {
@@ -145,6 +144,7 @@ public class CloudBlock {
                 for (int x=-1; x<=1; x++) {     // x axis first ^
                     Location neighborOffset = zeroOffset.clone();
                     neighborOffset.add(offset); // make relative to origin
+		    System.out.println("looking for neighbor at: " + neighborOffset);
                     
                     // test if free
                     Location neighborWorld = neighborOffset.add(loc);

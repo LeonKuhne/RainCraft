@@ -110,7 +110,6 @@ public class Cloud {
         
         // try to spawn on free spaces
         freeBlocks.forEach((neighbor, factor) -> {
-            System.out.println(factor);
             int cloudHeight = (neighbor.getBlockY() - RainUtil.getGroundAt(neighbor).getBlockY());
             int blockY = loc.getBlockY()+neighbor.getBlockY();
 
