@@ -101,9 +101,6 @@ public class RainUtil {
         double floorFactor = Math.min(Math.pow(percentCloudHeight, 0.5), 1.1);  // range from 0-1.5;
         
         double result = (diceFactor * heightFactor * floorFactor * extraFactor);
-        
-        System.out.println("grow threshold: " + result);
-        
         return result > threshold;
     }
     
