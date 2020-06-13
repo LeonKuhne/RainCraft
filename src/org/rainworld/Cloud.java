@@ -164,9 +164,9 @@ public class Cloud {
         
         if (hasMoved()) {
 	    moved = true;
-	    System.out.println("cloud moved")
+	    System.out.println("cloud moved");
 	} else {
-	    System.out.println(".")
+	    System.out.println(".");
 	}
     }
 
