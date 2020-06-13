@@ -1,0 +1,8 @@
+## YAML Template.
+---
+name: RainCraft
+version: 0.2
+main: org.rainworld.RainBlock
+api-version: 1.13
+commands:
+    clouds: 
