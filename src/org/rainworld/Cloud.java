@@ -105,7 +105,6 @@ public class Cloud {
         // collect all free spaces, removing duplicates
         for (CloudBlock cloudBlock : cloudBlocks) {
             Map<Location, Double> neighbors = cloudBlock.freeNeighbors(growFactors);
-	    System.out.println("neighbors: " + neighbors);
             freeBlocks.putAll(neighbors);
         }
         

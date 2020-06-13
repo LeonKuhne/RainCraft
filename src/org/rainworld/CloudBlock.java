@@ -140,17 +140,16 @@ public class CloudBlock {
         Location zeroOffset = new Location(RainUtil.getOverworld(), 0, 0, 0);
         
         // find neighbors
-        for (int y=-1; y<=1; y++) {                                             //                                                 then move up to next layer
-            for (int z=-1; z<=1; z++) {                                         //               then add z axis, completing pane ^
-                for (int x=-1; x<=1; x++) {                                     // x axis first ^
+        for (int y=-1; y<=1; y++) {             //     then move up to next layer
+            for (int z=-1; z<=1; z++) {         //   then add z axis, completing pane ^
+                for (int x=-1; x<=1; x++) {     // x axis first ^
                     Location neighborOffset = zeroOffset.clone();
+                    neighborOffset.add(offset); // make relative to origin
                     
                     // test if free
                     Location neighborWorld = neighborOffset.add(loc);
                     if (isAir(neighborWorld) && !isCloud(neighborWorld)) {
                         Double factor = RainUtil.getFactor(factors, x, y, z);
-                        
-                        neighborOffset.add(offset); // make relative to origin
                         neighbors.put(neighborOffset, factor);
                     }
                 }
