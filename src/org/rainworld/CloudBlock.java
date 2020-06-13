@@ -145,7 +145,8 @@ public class CloudBlock {
 		    neighborOffset.add(x, y, z);
                     
                     // test if free
-                    Location neighborWorld = neighborOffset.add(loc);
+                    Location neighborWorld = neighborOffset.clone();
+		    neighborWorld.add(loc);
                     if (isAir(neighborWorld) && !isCloud(neighborWorld)) {
                         Double factor = RainUtil.getFactor(factors, x, y, z);
                         neighbors.put(neighborOffset, factor);
@@ -154,7 +155,6 @@ public class CloudBlock {
             }   
         }
 
-	System.out.println("found neighbors" + neighbors);
         
         return neighbors;
     }
