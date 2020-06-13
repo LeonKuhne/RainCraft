@@ -162,7 +162,12 @@ public class Cloud {
         loc.add(tickDelta);   // position in world
         delta.add(tickDelta); // position relative to last draw
         
-        if (hasMoved()) { moved = true; }
+        if (hasMoved()) {
+	    moved = true;
+	    System.out.println("cloud moved")
+	} else {
+	    System.out.println(".")
+	}
     }
 
     // destroy all cloudblocks
