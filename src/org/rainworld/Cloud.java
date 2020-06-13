@@ -79,7 +79,9 @@ public class Cloud {
     }
     
     public void draw() {
-        cloudBlocks.forEach((cloudBlock) -> cloudBlock.draw());
+	for (int i=0; i<cloudBlock.size(); i++) {
+		cloudBlocks.get(i).draw();
+	}
         
         // reset delta
         delta.setX(0);
