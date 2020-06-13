@@ -181,7 +181,7 @@ public class Cloud {
     //
 
     public boolean hasMoved() {
-        return Math.abs(delta.getX()) >= 1 || Math.abs(delta.getY()) >= 1 || Math.abs(delta.getZ()) >= 1;
+        return (Math.abs(delta.getX()) >= 1) || (Math.abs(delta.getY()) >= 1) || (Math.abs(delta.getZ()) >= 1);
     }
 
     @Override
