@@ -67,7 +67,7 @@ public class Cloud {
         delta = new Location(origin.getWorld(), 0, 0, 0);
 
 	int direction = ThreadLocalRandom.current().nextInt(0, 360);
-	int speed = Math.random();
+	double speed = Math.random();
 	setDirection(direction, speed);
         spawning = true;
         moved = true; // moved into existance, thus draw
