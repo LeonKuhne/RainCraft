@@ -105,12 +105,12 @@ public class Cloud {
         // collect all free spaces, removing duplicates
         for (CloudBlock cloudBlock : cloudBlocks) {
             Map<Location, Double> neighbors = cloudBlock.freeNeighbors(growFactors);
+	    System.out.println("neighbors: " + neighbors);
             freeBlocks.putAll(neighbors);
         }
         
         // try to spawn on free spaces
         freeBlocks.forEach((neighbor, factor) -> {
-	    System.out.println("found factor: " + factor);
             int cloudHeight = (neighbor.getBlockY() - RainUtil.getGroundAt(neighbor).getBlockY());
             int blockY = loc.getBlockY()+neighbor.getBlockY();
 
