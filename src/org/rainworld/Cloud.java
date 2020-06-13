@@ -153,7 +153,7 @@ public class Cloud {
      */
     private void move() {
         // calculate next tick movement delta
-        double piDirection = (direction/360)*2*Math.PI;
+        double piDirection = (direction/360.0)*2.0*Math.PI;
         double xMove = Math.cos(piDirection) * speed;
         double zMove = Math.sin(piDirection) * speed;
         Location tickDelta = new Location(RainUtil.getOverworld(), xMove, 0, zMove);
