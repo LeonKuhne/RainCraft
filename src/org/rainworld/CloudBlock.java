@@ -47,6 +47,7 @@ public class CloudBlock {
     
     public void draw() {
         Location loc = getLoc();
+	System.out.println("drawing at: " + loc);
         
         if (cloud.moved) {
             cloud.moved = false;
@@ -94,7 +95,7 @@ public class CloudBlock {
     public static void SpawnDroplet(Location loc) {
         
         Location rainLoc = loc.clone();
-        rainLoc.add(Math.random(), 0, Math.random());;;
+        rainLoc.add(Math.random(), 0, Math.random());
         rainLoc.getWorld().spawnParticle(Particle.DRIP_WATER, rainLoc, 1);
     }
     
