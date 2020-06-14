@@ -42,7 +42,7 @@ public class PlayerUnderCloud implements Listener {
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         // moved to different block
-        if (!(RainUtil.sameBlock(event.getFrom(), event.getTo()))) {
+        if (!(RainUtil.sameLocation(event.getFrom(), event.getTo()))) {
             Location loc = event.getTo().clone();
 
             // check if raining
