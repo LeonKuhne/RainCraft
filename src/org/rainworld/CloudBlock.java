@@ -78,7 +78,7 @@ public class CloudBlock {
     //
     
     private boolean placeBlock() {
-	placeBlock(getLoc());
+	return placeBlock(getLoc());
     }
     private boolean placeBlock(Location loc) {
         Block cloudBlock = loc.getBlock();
