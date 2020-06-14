@@ -95,8 +95,11 @@ public class Cloud {
 	    cloudBlocks.add(newCloudBlocks.remove(0));
 	}
 
+	// draw blocks, or destroy
 	for (int i=0; i<cloudBlocks.size(); i++) {
-	    cloudBlocks.get(i).draw();
+	    if (!cloudBlocks.get(i).draw()) {
+		cloudBlocks.remove(i).destroy();
+	    }
 	}
         
         // reset delta

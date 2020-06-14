@@ -59,7 +59,7 @@ public class CloudBlock {
 	    Location lastLoc = lastLoc();
             if (!RainUtil.sameLocation(lastLoc, loc)) { destroy(lastLoc); }
 	
-            // place new and remove old cloud blocks from world
+            // place new block
             if (!placeBlock(loc)) {
 		    return false;
 	    }
@@ -70,7 +70,9 @@ public class CloudBlock {
             if (RainUtil.aboveAir(loc)) {
                 SpawnDroplet(loc);
             }
-        }
+	}
+
+	return true;
     }
     
                 
