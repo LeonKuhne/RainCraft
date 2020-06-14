@@ -50,7 +50,10 @@ public class CloudBlock {
         
         if (cloud.moved) {
             // place new and remove old cloud blocks from world
-            if (!placeBlock()) { cloud.cloudBlocks.remove(this); }
+            if (!placeBlock()) {
+		    cloud.cloudBlocks.remove(this);
+		    destroy();
+	    }
             if (!RainUtil.sameBlock(lastLoc(), loc)) { destroy(); }
         }
         
