@@ -91,18 +91,25 @@ public class Cloud {
     }
     
     public void draw() {
+	// add new blocks
 	while (newCloudBlocks.size() > 0) {
 	    cloudBlocks.add(newCloudBlocks.remove(0));
 	}
 
-	// draw blocks, or destroy
+	// draw blocks
+	List<CloudBlock> destroyBlocks = new ArrayList();
 	for (int i=0; i<cloudBlocks.size(); i++) {
 	    if (!cloudBlocks.get(i).draw()) {
-		cloudBlocks.remove(i).destroy();
+		destroyBlocks.add(cloudBlocks.remove(i));
 	    }
 	}
+
+	// destroy failed blocks
+	while (destroyBlocks.size() > 0) {
+	    destroyBlocks.remove(i).destroy();
+	}
         
-        // reset delta
+        // reset movement delta
 	if (moved) {
 	    delta.setX(0);
 	    delta.setY(0);
