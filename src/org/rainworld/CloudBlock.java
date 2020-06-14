@@ -57,11 +57,11 @@ public class CloudBlock {
 
 	    // remove last block
 	    Location lastLoc = lastLoc();
-            if (!RainUtil.sameCloud(loc.getBlock(), lastLoc.getBlock())) { destroy(lastLoc); }
+	    destroy(lastLoc);
 	
             // place new block
             if (!placeBlock(loc)) {
-		    return false;
+		return false;
 	    }
         }
         
@@ -97,12 +97,15 @@ public class CloudBlock {
     public void destroy() {
 	destroy(lastLoc());
     }
+
     public void destroy(Location loc) {
         Block cloudBlock = loc.getBlock();
-        cloudBlock.removeMetadata("cloud", cloud.plugin);
+	if (RainUtil.hasCloudId(cloudBlock, id)) {
+            cloudBlock.removeMetadata("cloud", cloud.plugin);
+	    RainUtil.debug(loc);
+	    //cloudBlock.setType(Material.AIR);
+	}
         
-	cloudBlock.setType(Material.AIR);
-	//RainUtil.debug(loc);
     }
     
     
