@@ -34,6 +34,7 @@ public class Cloud {
     protected Plugin plugin;
     protected Player creator;
     protected List<CloudBlock> cloudBlocks;
+    protected List<CloudBlock> newCloudBlocks;
     protected boolean spawning;
     protected Location loc; // (origin block) cloud location
     protected Location delta; // movement delta since last draw
@@ -62,18 +63,20 @@ public class Cloud {
         this.plugin = plugin;
         
         cloudBlocks = new ArrayList();
+        newCloudBlocks = new ArrayList();
 
         loc = origin.getBlock().getLocation().clone();
         delta = new Location(origin.getWorld(), 0, 0, 0);
+        spawning = true;
 
 	int direction = ThreadLocalRandom.current().nextInt(0, 360);
 	double speed = Math.sqrt(Math.random());
 	setDirection(direction, speed);
-        spawning = true;
-        moved = true; // moved into existance, thus draw
+        
+	moved = true; // moved into existance, thus draw
         
         // add the start block
-        cloudBlocks.add(new CloudBlock(this));
+        newCloudBlocks.add(new CloudBlock(this));
         
         tasks = new ArrayList();                                                // threads          
         BukkitScheduler scheduler = plugin.getServer().getScheduler();
@@ -83,6 +86,10 @@ public class Cloud {
     }
     
     public void draw() {
+	while (newCloudBlocks.size() > 0) {
+	    cloudBlocks.add(newCloudBlocks.remove());
+	}
+
 	for (int i=0; i<cloudBlocks.size(); i++) {
 	    cloudBlocks.get(i).draw();
 	}
@@ -130,7 +137,7 @@ public class Cloud {
 	    double result = RainUtil.rollDice(blockY, cloudHeight, factor);
             if (result > threshold) {
                 if (cloudBlocks.size() < MAX_SIZE) {
-                    cloudBlocks.add(new CloudBlock(this, neighbor));
+                    newCloudBlocks.add(new CloudBlock(this, neighbor));
 	    	    notify("Cloud grew");
                 } else {
 	    	    notify("Max cloud size reached: " + MAX_SIZE);
