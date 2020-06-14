@@ -106,7 +106,7 @@ public class Cloud {
 
 	// destroy failed blocks
 	while (destroyBlocks.size() > 0) {
-	    destroyBlocks.remove(i).destroy();
+	    destroyBlocks.remove(0).destroy();
 	}
         
         // reset movement delta
