@@ -26,7 +26,7 @@ public class RainUtil {
     static final int RAINDROP_DELAY = 50;
 
     public static boolean blockIsCloud(Block block, CloudBlock cloudBlock) {
-   	return cloudBlock.equals(blockA.getMetadata("cloud"));
+   	return cloudBlock.equals(block.getMetadata("cloud"));
     }
 
     public static boolean sameLocation(Location locA, Location locB) {
