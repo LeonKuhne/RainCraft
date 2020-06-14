@@ -56,10 +56,11 @@ public class CloudBlock {
         if (cloud.moved) {
 
 	    // remove last block
-            if (!RainUtil.sameBlock(lastLoc(), loc)) { destroy(); }
+	    Location lastLoc = lastLoc();
+            if (!RainUtil.sameLocation(lastLoc, loc)) { destroy(lastLoc); }
 	
             // place new and remove old cloud blocks from world
-            if (!placeBlock()) {
+            if (!placeBlock(loc)) {
 		    return false;
 	    }
         }
@@ -77,7 +78,10 @@ public class CloudBlock {
     //
     
     private boolean placeBlock() {
-        Block cloudBlock = getLoc().getBlock();
+	placeBlock(getLoc());
+    }
+    private boolean placeBlock(Location loc) {
+        Block cloudBlock = loc.getBlock();
         if (!RainUtil.isCloud(cloudBlock) && RainUtil.isAir(cloudBlock)) {
             cloudBlock.setType(Material.WHITE_WOOL);
             cloudBlock.setMetadata("cloud", new FixedMetadataValue(cloud.plugin, this));
@@ -87,13 +91,16 @@ public class CloudBlock {
         return false;
     }
     
+
     public void destroy() {
-        Location loc = lastLoc();
+	destroy(lastLoc());
+    }
+    public void destroy(Location loc) {
         Block cloudBlock = loc.getBlock();
         cloudBlock.removeMetadata("cloud", cloud.plugin);
         
-	RainUtil.debug(loc);
-	//cloudBlock.setType(Material.AIR);
+	cloudBlock.setType(Material.AIR);
+	//RainUtil.debug(loc);
     }
     
     
