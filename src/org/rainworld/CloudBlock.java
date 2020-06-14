@@ -57,7 +57,7 @@ public class CloudBlock {
 
 	    // remove last block
 	    Location lastLoc = lastLoc();
-            if (!RainUtil.sameLocation(lastLoc, loc)) { destroy(lastLoc); }
+            if (!RainUtil.sameCloud(loc.getBlock(), lastLoc.getBlock())) { destroy(lastLoc); }
 	
             // place new block
             if (!placeBlock(loc)) {
