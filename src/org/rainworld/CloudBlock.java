@@ -99,11 +99,11 @@ public class CloudBlock {
     }
 
     public void destroy(Location loc) {
-        Block cloudBlock = loc.getBlock();
-	if (RainUtil.hasCloudId(cloudBlock, id)) {
-            cloudBlock.removeMetadata("cloud", cloud.plugin);
+        Block block = loc.getBlock();
+	if (RainUtil.blockIsCloud(block, this)) {
+            block.removeMetadata("cloud", cloud.plugin);
 	    RainUtil.debug(loc);
-	    //cloudBlock.setType(Material.AIR);
+	    //block.setType(Material.AIR);
 	}
         
     }

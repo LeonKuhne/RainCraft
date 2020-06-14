@@ -25,9 +25,8 @@ public class RainUtil {
     static final int MAX_CLOUDS = 1000;
     static final int RAINDROP_DELAY = 50;
 
-    public static boolean sameCloud(Block blockA, Block blockB) {
-   	return (sameLocation(blockA.getLocation(), blockB.getLocation()) &&
-		blockA.getMetadata("cloud").equals(blockB.getMetadata("cloud")));
+    public static boolean blockIsCloud(Block block, CloudBlock cloudBlock) {
+   	return cloudBlock.equals(blockA.getMetadata("cloud"));
     }
 
     public static boolean sameLocation(Location locA, Location locB) {
