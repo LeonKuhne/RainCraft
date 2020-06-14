@@ -87,7 +87,7 @@ public class Cloud {
     
     public void draw() {
 	while (newCloudBlocks.size() > 0) {
-	    cloudBlocks.add(newCloudBlocks.remove());
+	    cloudBlocks.add(newCloudBlocks.remove(0));
 	}
 
 	for (int i=0; i<cloudBlocks.size(); i++) {
