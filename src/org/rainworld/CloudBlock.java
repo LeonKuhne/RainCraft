@@ -27,17 +27,22 @@ public class CloudBlock {
     static final int DROPLET_DIVISIONS = 3;
     
     // vars
-    private Cloud cloud;
+    protected Cloud cloud;
+    protected int id;
     private Location offset;
     
-    
-    public CloudBlock(Cloud cloud, Location offset) {           // Grow Cloud
+    // Grow Cloud
+    public CloudBlock(Cloud cloud, Location offset) {
         this.cloud = cloud;
         this.offset = offset; // offset from center of cloud
     }
-    
-    public CloudBlock(Cloud cloud) {                                            // Origin Cloud
+  
+    // Origin Cloud
+    public CloudBlock(Cloud cloud) {
         this(cloud, new Location(RainUtil.getOverworld(), 0, 0, 0));
+
+	id = cloud.count;
+	cloud.count++;
     }
     
     
@@ -45,16 +50,18 @@ public class CloudBlock {
     //
     
     
-    public void draw() {
+    public boolean draw() {
         Location loc = getLoc();
         
         if (cloud.moved) {
+
+	    // remove last block
+            if (!RainUtil.sameBlock(lastLoc(), loc)) { destroy(); }
+	
             // place new and remove old cloud blocks from world
             if (!placeBlock()) {
-		    cloud.cloudBlocks.remove(this);
-		    destroy();
+		    return false;
 	    }
-            if (!RainUtil.sameBlock(lastLoc(), loc)) { destroy(); }
         }
         
         // animate rain
@@ -73,7 +80,7 @@ public class CloudBlock {
         Block cloudBlock = getLoc().getBlock();
         if (!RainUtil.isCloud(cloudBlock) && RainUtil.isAir(cloudBlock)) {
             cloudBlock.setType(Material.WHITE_WOOL);
-            cloudBlock.setMetadata("cloud", new FixedMetadataValue(cloud.plugin, true));
+            cloudBlock.setMetadata("cloud", new FixedMetadataValue(cloud.plugin, this));
             return true;
         }
         
@@ -85,7 +92,8 @@ public class CloudBlock {
         Block cloudBlock = loc.getBlock();
         cloudBlock.removeMetadata("cloud", cloud.plugin);
         
-        cloudBlock.setType(Material.AIR);
+	RainUtil.debug(loc);
+	//cloudBlock.setType(Material.AIR);
     }
     
     
@@ -160,9 +168,10 @@ public class CloudBlock {
             }   
         }
 
-        
         return neighbors;
     }
-    
-    
+
+    public boolean equals(CloudBlock other) {
+    	return cloud.equals(other.cloud) && (id == other.id);
+    }
 }

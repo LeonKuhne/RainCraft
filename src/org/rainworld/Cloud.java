@@ -27,6 +27,7 @@ public class Cloud {
     public final static double DEFAULT_BOTTOM = 0.2;
     public final static double DEFAULT_SIDES = 1.0;
     public final static double DEFAULT_CORNERS = 0.2;
+    public static int CLOUD_COUNT = 0;
     
     
     // vars
@@ -35,10 +36,15 @@ public class Cloud {
     protected List<CloudBlock> cloudBlocks;
     protected List<CloudBlock> newCloudBlocks;
     protected boolean spawning;
-    protected Location loc; // (origin block) cloud location
+    protected Location loc;   // (origin block) cloud location
     protected Location delta; // movement delta since last draw
     protected boolean moved;
+    protected int id;
+    protected int count;
+    private double speed;
+    private int direction;
     
+    private List<BukkitTask> tasks;
     private Map<String, Double> growFactors = new HashMap() {{
         put("threshold", DEFAULT_THRESHOLD);
         put("top", DEFAULT_TOP);
@@ -46,11 +52,7 @@ public class Cloud {
         put("sides", DEFAULT_SIDES);
         put("corners", DEFAULT_CORNERS);
     }};
-    private int direction;
-    private double speed;
     
-    private List<BukkitTask> tasks;
-            
     
     public Cloud(Plugin plugin, Player player, Map<String, Double> factors) {
        	this(plugin, RainUtil.cloudAbove(player));
@@ -63,6 +65,10 @@ public class Cloud {
         
         cloudBlocks = new ArrayList();
         newCloudBlocks = new ArrayList();
+
+	count = 0;	
+	id = CLOUD_COUNT;
+	CLOUD_COUNT++;
 
         loc = origin.getBlock().getLocation().clone();
         delta = new Location(origin.getWorld(), 0, 0, 0);

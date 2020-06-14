@@ -25,16 +25,15 @@ public class RainUtil {
     static final int MAX_CLOUDS = 1000;
     static final int RAINDROP_DELAY = 50;
 
-    public static boolean sameBlock(Location blockFrom, Location blockTo) {
-        if (blockFrom.getBlockX() == blockTo.getBlockX()) {
-            if (blockFrom.getBlockZ() == blockTo.getBlockZ()) {
-                if (blockFrom.getBlockY() == blockTo.getBlockY()) {
-                    return true;
-                }
-            }
-        }
-        
-        return false;
+    public static boolean sameCloud(Block blockA, Location blockB) {
+   	return (sameLoc(blockA.getLocation(), blockB.getLocation()) &&
+		blockA.getMetadata("cloud").equals(blockB.getMetadata("cloud")));
+    }
+
+    public static boolean sameLocation(Location locA, Location locB) {
+        return (locA.getBlockX() == locB.getBlockX() && 
+	    	locA.getBlockZ() == locB.getBlockZ() &&
+           	locA.getBlockY() == locB.getBlockY());
     }
     
     public static World getOverworld() {
