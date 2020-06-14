@@ -21,7 +21,7 @@ public class Cloud {
     public final static int MAX_SIZE = 50;
     public final static long SPAWN_TIME = 200;
     public final static long DRAW_TIME = 5;
-    public final static long TICK_TIME = 50;
+    public final static long TICK_TIME = 15;
     
     public final static double DEFAULT_THRESHOLD = 0.7;
     public final static double DEFAULT_TOP = 0.8;
