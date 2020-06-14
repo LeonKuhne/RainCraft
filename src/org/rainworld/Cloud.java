@@ -173,9 +173,6 @@ public class Cloud {
         
         if (hasMoved()) {
 	    moved = true;
-	    System.out.println("cloud moved");
-	} else {
-	    System.out.println("cloud stationary: " + delta);
 	}
     }
 
