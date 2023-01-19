@@ -1,6 +1,12 @@
+# required
 name: RainCraft
-version: 0.2
+version: 0.3
 main: org.rainworld.RainBlock
-api-version: 1.13
+# optional
+description: Mountains form clouds which rain moving sediment to form rivers, lakes and more mountains.
+api-version: 1.19
+author: leonk.dev 
+website: info.dankpiss.art
 commands:
-    clouds: 
+  clouds: 
+    description: "Enables cloud spawning."

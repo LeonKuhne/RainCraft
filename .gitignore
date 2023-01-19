@@ -1,7 +1,5 @@
-
-nbproject/
+*.swp
 dist/
 lib/
-test/
 build/
-build.xml
+tools/
