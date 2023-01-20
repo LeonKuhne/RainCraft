@@ -12,27 +12,21 @@ rain_src="$rain_home/src"
 rain_build="$rain_home/build"
 rain_dist="$rain_home/dist"
 
-function compile() {
-  javac -cp lib/spigot-1.19.3.jar -d build src/org/rainworld/RainBlock.java
-}
-
-function compress() {
-  # create jar
-  class_files=$(find $rain_build -name "*.class")
-  echo -en "\e[33m"
-  echo -e "$src_files" | awk '{ print "compressing... " $0 }'
-  echo -en "\e[32m"
-
-  # add config to jar (plugin.yml)
-  jar -cf "$rain_dist/RainCraft.jar" plugin.yml
-
-  # add classes to jar
-  jar -uf "$rain_dist/RainCraft.jar" $class_files
-  echo -en "\e[37m"
+function build() {
+  mvn install
 }
 
 function test() {
+  build
   cp target/raincraft-1.0-SNAPSHOT.jar test/plugins/RainCraft.jar
   cd test
   ./run.sh test
+  cc ..
+}
+
+function dev() {
+  test
+  echo "restarting... ctrl+C to cancel"
+  sleep 1
+  dev
 }

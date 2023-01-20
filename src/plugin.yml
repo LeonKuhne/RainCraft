@@ -9,4 +9,4 @@ author: leonk.dev
 website: info.dankpiss.art
 commands:
   clouds: 
-    description: "Enables cloud spawning."
+    description: "Spawn clouds"

@@ -2,6 +2,5 @@
 dist/
 lib/
 build/
-tools/
 test/
 target/
