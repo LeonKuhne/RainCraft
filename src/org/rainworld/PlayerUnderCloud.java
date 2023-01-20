@@ -1,10 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.rainworld;
-
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Location;
@@ -12,19 +6,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-/**
- * @author lxk1170
- */
 public class PlayerUnderCloud implements Listener {
     static final double LIGHTNING_STRIKE_CHANCE = 0.1;
-    
     
     // get the clouds directly above the player
     public static List<Location> cloudsAbove(Location loc) {
         Location cursor = loc.clone();
         cursor.setY(cursor.getBlockY());
         
-        List<Location> foundClouds = new ArrayList();
+        List<Location> foundClouds = new ArrayList<Location>();
         
         // skip the air
         while (cursor.getBlockY() < cursor.getWorld().getMaxHeight()) {

@@ -18,7 +18,7 @@ function build() {
 
 function test() {
   build
-  cp target/raincraft-1.0-SNAPSHOT.jar test/plugins/RainCraft.jar
+  cp target/rainworld-1.0-SNAPSHOT.jar test/plugins/RainWorld.jar
   cd test
   ./run.sh test
   cc ..

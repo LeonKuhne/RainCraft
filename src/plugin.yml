@@ -1,12 +1,12 @@
 # required
-name: RainCraft
+name: RainWorld
 version: 0.3
-main: org.rainworld.RainBlock
+main: org.rainworld.RainWorld
 # optional
-description: Mountains form clouds which rain moving sediment to form rivers, lakes and more mountains.
+description: Clouds atop mountains, captured in air. Terraform rain flows, better beware.
 api-version: 1.19
 author: leonk.dev 
 website: info.dankpiss.art
 commands:
   clouds: 
-    description: "Spawn clouds"
+    description: "Let it rain!"

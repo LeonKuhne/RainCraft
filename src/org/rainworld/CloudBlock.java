@@ -1,10 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.rainworld;
-
+import static org.rainworld.RainUtil.isAir;
+import static org.rainworld.RainUtil.isCloud;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -14,176 +10,170 @@ import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
-import static org.rainworld.RainUtil.isAir;
-import static org.rainworld.RainUtil.isCloud;
 
-/**
- * @author lxk1170
- */
 public class CloudBlock {
-    // const
-    static final int MAX_RAIN_DELAY = 50;
-    static final int RAIN_FADE_DELAY = 50;
-    static final int DROPLET_DIVISIONS = 3;
-    
-    // vars
-    protected Cloud cloud;
-    protected int id;
-    private Location offset;
-    
-    // Grow Cloud
-    public CloudBlock(Cloud cloud, Location offset) {
-        this.cloud = cloud;
-        this.offset = offset; // offset from center of cloud
-    }
-  
-    // Origin Cloud
-    public CloudBlock(Cloud cloud) {
-        this(cloud, new Location(RainUtil.getOverworld(), 0, 0, 0));
+  // const
+  static final int MAX_RAIN_DELAY = 50;
+  static final int RAIN_FADE_DELAY = 50;
+  static final int DROPLET_DIVISIONS = 3;
+  static final String METADATA_KEY = "cloud";
 
-	id = cloud.count;
-	cloud.count++;
-    }
-    
-    
-    // ACTIONS
-    //
-    
-    
-    public boolean draw() {
-        Location loc = getLoc();
-        
-        if (cloud.moved) {
+  // vars
+  protected Cloud cloud;
+  protected int id;
+  private Location offset;
 
-	    // remove last block
-	    Location lastLoc = lastLoc();
-	    destroy(lastLoc);
-	
-            // place new block
-            if (!placeBlock(loc)) {
-		return false;
-	    }
-        }
-        
-        // animate rain
-        if (!cloud.spawning) {
-            if (RainUtil.aboveAir(loc)) {
-                SpawnDroplet(loc);
-            }
-	}
+  // Grow Cloud
+  public CloudBlock(Cloud cloud, Location offset) {
+    this.cloud = cloud;
+    this.offset = offset; // offset from center of cloud
+  }
 
-	return true;
-    }
-    
-                
-    // WORLD INTERACTIONS
-    //
-    
-    private boolean placeBlock() {
-	return placeBlock(getLoc());
-    }
-    private boolean placeBlock(Location loc) {
-        Block cloudBlock = loc.getBlock();
-        if (!RainUtil.isCloud(cloudBlock) && RainUtil.isAir(cloudBlock)) {
-            cloudBlock.setType(Material.WHITE_WOOL);
-            cloudBlock.setMetadata("cloud", new FixedMetadataValue(cloud.plugin, this));
-            return true;
-        }
-        
+  // Origin Cloud
+  public CloudBlock(Cloud cloud) {
+    this(cloud, new Location(RainUtil.getOverworld(), 0, 0, 0));
+
+    id = cloud.count;
+    cloud.count++;
+  }
+
+  // ACTIONS
+  //
+
+  public boolean draw() {
+    Location loc = getLoc();
+
+    if (cloud.moved) {
+
+      // remove last block
+      Location lastLoc = lastLoc();
+      destroy(lastLoc);
+
+      // place new block
+      if (!placeBlock(loc)) {
         return false;
-    }
-    
-
-    public void destroy() {
-	destroy(lastLoc());
+      }
     }
 
-    public void destroy(Location loc) {
-        Block block = loc.getBlock();
-	if (RainUtil.blockIsCloud(block, this)) {
-            block.removeMetadata("cloud", cloud.plugin);
-	    RainUtil.debug(loc);
-	    //block.setType(Material.AIR);
-	}
-        
+    // animate rain
+    if (!cloud.spawning) {
+      if (RainUtil.aboveAir(loc)) {
+        SpawnDroplet(loc);
+      }
     }
-    
-    
-    // RAIN
-    //
-    
-    public static void SpawnDroplet(Location loc) {
-        
-        Location rainLoc = loc.clone();
-        rainLoc.add(Math.random(), 0, Math.random());
-        rainLoc.getWorld().spawnParticle(Particle.DRIP_WATER, rainLoc, 1);
-    }
-    
-    public static void SpawnDropletDivisions(Plugin plugin, Location loc) {
-        Location rainLoc = loc.clone();
-        for (int divX = 0; divX < DROPLET_DIVISIONS; divX++) {
-            for (int divZ = 0; divZ < DROPLET_DIVISIONS; divZ++) {
-                Location cursorLoc = rainLoc.clone();
-                cursorLoc.add((divX+0.5)/DROPLET_DIVISIONS, 0, (divZ+0.5)/DROPLET_DIVISIONS);
 
-                // delay random amount
-                plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
-                    public void run() {
-                        // spawn raindrop   
-                        rainLoc.getWorld().spawnParticle(Particle.WATER_DROP, cursorLoc, 1);
-                    }
-                }, ThreadLocalRandom.current().nextInt(0, MAX_RAIN_DELAY));
-            }
+    return true;
+  }
+
+  // WORLD INTERACTIONS
+  //
+
+  private boolean placeBlock() {
+    return placeBlock(getLoc());
+  }
+
+  private boolean placeBlock(Location loc) {
+    Block cloudBlock = loc.getBlock();
+    if (!RainUtil.isCloud(cloudBlock) && RainUtil.isAir(cloudBlock)) {
+      cloudBlock.setType(Material.WHITE_WOOL);
+      cloudBlock.setMetadata(METADATA_KEY, new FixedMetadataValue(cloud.plugin, this));
+      return true;
+    }
+
+    return false;
+  }
+
+  public void destroy() {
+    destroy(lastLoc());
+  }
+
+  public void destroy(Location loc) {
+    Block block = loc.getBlock();
+    if (RainUtil.blockIsCloud(block, this)) {
+      block.removeMetadata(METADATA_KEY, cloud.plugin);
+      RainUtil.debug(loc);
+      // block.setType(Material.AIR);
+    }
+
+  }
+
+  // RAIN
+  //
+
+  public static void SpawnDroplet(Location loc) {
+
+    Location rainLoc = loc.clone();
+    rainLoc.add(Math.random(), 0, Math.random());
+    rainLoc.getWorld().spawnParticle(Particle.DRIP_WATER, rainLoc, 1);
+  }
+
+  public static void SpawnDropletDivisions(Plugin plugin, Location loc) {
+    Location rainLoc = loc.clone();
+    for (int divX = 0; divX < DROPLET_DIVISIONS; divX++) {
+      for (int divZ = 0; divZ < DROPLET_DIVISIONS; divZ++) {
+        Location cursorLoc = rainLoc.clone();
+        cursorLoc.add((divX + 0.5) / DROPLET_DIVISIONS, 0, (divZ + 0.5) / DROPLET_DIVISIONS);
+
+        // delay random amount
+        plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+          public void run() {
+            // spawn raindrop
+            rainLoc.getWorld().spawnParticle(Particle.WATER_DROP, cursorLoc, 1);
+          }
+        }, ThreadLocalRandom.current().nextInt(0, MAX_RAIN_DELAY));
+      }
+    }
+  }
+
+  // HELPER
+  //
+
+  private Location getLoc() {
+    Location loc = cloud.loc.clone();
+    loc.add(offset);
+    return loc;
+  }
+
+  private Location lastLoc() {
+    Location lastLoc = getLoc();
+    lastLoc.subtract(cloud.delta);
+    return lastLoc;
+  }
+
+  /**
+   * Get the neighboring free air blocks next to this cloud block; checks all 8
+   * surrounding blocks
+   * 
+   * @param factors control the grow parameters of the cloud;
+   * @return a map of locations containing offset (delta) information from the
+   *         origin
+   */
+  public Map<Location, Double> freeNeighbors(Map<String, Double> factors) {
+    Map<Location, Double> neighbors = new HashMap<Location, Double>();
+    Location loc = getLoc();
+
+    // find neighbors
+    for (int y = -1; y <= 1; y++) { // then move up to next layer
+      for (int z = -1; z <= 1; z++) { // then add z axis, completing pane ^
+        for (int x = -1; x <= 1; x++) { // x axis first ^
+          Location neighborOffset = offset.clone();
+          neighborOffset.add(x, y, z);
+
+          // test if free
+          Location neighborWorld = neighborOffset.clone();
+          neighborWorld.add(loc);
+          if (isAir(neighborWorld) && !isCloud(neighborWorld)) {
+            Double factor = RainUtil.getFactor(factors, x, y, z);
+            neighbors.put(neighborOffset, factor);
+          }
         }
-    }
-    
-    
-    // HELPER
-    //
-    
-    private Location getLoc() {
-        Location loc = cloud.loc.clone();
-	loc.add(offset);
-	return loc;
-    }
-    
-    private Location lastLoc() {
-	Location lastLoc = getLoc();
-	lastLoc.subtract(cloud.delta);
-	return lastLoc;
-    }
-    
-    /**
-     * Get the neighboring free air blocks next to this cloud block; checks all 8 surrounding blocks
-     * @param factors control the grow parameters of the cloud; 
-     * @return a map of locations containing offset (delta) information from the origin
-     */
-    public Map<Location, Double> freeNeighbors(Map<String, Double> factors) {
-        Map<Location, Double> neighbors = new HashMap();
-        Location loc = getLoc();
-        
-        // find neighbors
-        for (int y=-1; y<=1; y++) {             //     then move up to next layer
-            for (int z=-1; z<=1; z++) {         //   then add z axis, completing pane ^
-                for (int x=-1; x<=1; x++) {     // x axis first ^
-                    Location neighborOffset = offset.clone();
-		    neighborOffset.add(x, y, z);
-                    
-                    // test if free
-                    Location neighborWorld = neighborOffset.clone();
-		    neighborWorld.add(loc);
-                    if (isAir(neighborWorld) && !isCloud(neighborWorld)) {
-                        Double factor = RainUtil.getFactor(factors, x, y, z);
-                        neighbors.put(neighborOffset, factor);
-                    }
-                }
-            }   
-        }
-
-        return neighbors;
+      }
     }
 
-    public boolean equals(CloudBlock other) {
-    	return cloud.equals(other.cloud) && (id == other.id);
-    }
+    return neighbors;
+  }
+
+  public boolean equals(CloudBlock other) {
+    return cloud.equals(other.cloud) && (id == other.id);
+  }
 }
