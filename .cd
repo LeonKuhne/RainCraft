@@ -12,12 +12,6 @@ rain_src="$rain_home/src"
 rain_build="$rain_home/build"
 rain_dist="$rain_home/dist"
 
-function save() {
-  git add .
-  git commit -m "[auto] build save"
-  git push
-}
-
 function compile() {
   javac -cp lib/spigot-1.19.3.jar -d build src/org/rainworld/RainBlock.java
 }
@@ -35,4 +29,10 @@ function compress() {
   # add classes to jar
   jar -uf "$rain_dist/RainCraft.jar" $class_files
   echo -en "\e[37m"
+}
+
+function test() {
+  cp target/raincraft-1.0-SNAPSHOT.jar test/plugins/RainCraft.jar
+  cd test
+  ./run.sh test
 }
