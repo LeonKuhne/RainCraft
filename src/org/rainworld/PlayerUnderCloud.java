@@ -21,7 +21,7 @@ public class PlayerUnderCloud implements Listener {
             if (RainUtil.isCloud(cursor)) {
                 foundClouds.add(cursor.clone());                                // its a cloud
             } else if (!RainUtil.isAir(cursor)) {
-                return new ArrayList();                                         // its not air
+                return new ArrayList<Location>();                                         // its not air
             }
             cursor.add(0, 1, 0);                                                // move up
         }

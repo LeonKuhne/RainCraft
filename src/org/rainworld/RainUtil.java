@@ -1,5 +1,6 @@
 package org.rainworld;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.Bukkit;
@@ -8,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.MetadataValue;
 
 public class RainUtil {
   static final int CLOUD_HEIGHT = 20;
@@ -17,7 +19,11 @@ public class RainUtil {
   static final int RAINDROP_DELAY = 50;
 
   public static boolean blockIsCloud(Block block, CloudBlock otherBlock) {
-    CloudBlock cloudBlock = (CloudBlock) block.getMetadata("cloud").get(0).value();
+    List<MetadataValue> meta = block.getMetadata("cloud");
+    if (meta.size() == 0) {
+      return false;
+    }
+    CloudBlock cloudBlock = (CloudBlock) meta.get(0).value();
     return cloudBlock.equals(otherBlock);
   }
 
@@ -121,9 +127,7 @@ public class RainUtil {
   /**
    * Get the factor based on if its a corner, top, bottom, and/or sides
    * Factors multiply if intersecting
-   * 
-   * @return a double (from 0-1) which can be applied to randomly choosing
-   *         neighbors
+   * @return normalized double which can be applied to randomly choosing neighbors
    */
   public static Double getFactor(Map<String, Double> factors, int x, int y, int z) {
     double factor = 1.0;

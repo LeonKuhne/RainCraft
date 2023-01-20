@@ -12,13 +12,11 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 
 public class CloudBlock {
-  // const
   static final int MAX_RAIN_DELAY = 50;
   static final int RAIN_FADE_DELAY = 50;
   static final int DROPLET_DIVISIONS = 3;
   static final String METADATA_KEY = "cloud";
 
-  // vars
   protected Cloud cloud;
   protected int id;
   private Location offset;
@@ -32,7 +30,6 @@ public class CloudBlock {
   // Origin Cloud
   public CloudBlock(Cloud cloud) {
     this(cloud, new Location(RainUtil.getOverworld(), 0, 0, 0));
-
     id = cloud.count;
     cloud.count++;
   }
@@ -43,23 +40,15 @@ public class CloudBlock {
   public boolean draw() {
     Location loc = getLoc();
 
+    // move cloud
     if (cloud.moved) {
-
-      // remove last block
-      Location lastLoc = lastLoc();
-      destroy(lastLoc);
-
-      // place new block
-      if (!placeBlock(loc)) {
-        return false;
-      }
+      destroy(lastLoc());
+      if (!placeBlock(loc)) return false;
     }
 
     // animate rain
-    if (!cloud.spawning) {
-      if (RainUtil.aboveAir(loc)) {
-        SpawnDroplet(loc);
-      }
+    if (RainUtil.aboveAir(loc)) {
+      SpawnDroplet(loc);
     }
 
     return true;
@@ -68,19 +57,15 @@ public class CloudBlock {
   // WORLD INTERACTIONS
   //
 
-  private boolean placeBlock() {
-    return placeBlock(getLoc());
-  }
-
   private boolean placeBlock(Location loc) {
     Block cloudBlock = loc.getBlock();
-    if (!RainUtil.isCloud(cloudBlock) && RainUtil.isAir(cloudBlock)) {
-      cloudBlock.setType(Material.WHITE_WOOL);
-      cloudBlock.setMetadata(METADATA_KEY, new FixedMetadataValue(cloud.plugin, this));
-      return true;
+    if (RainUtil.isCloud(cloudBlock) || !RainUtil.isAir(cloudBlock)) {
+      return false;
     }
 
-    return false;
+    cloudBlock.setType(Material.WHITE_WOOL);
+    cloudBlock.setMetadata(METADATA_KEY, new FixedMetadataValue(cloud.plugin, this));
+    return true;
   }
 
   public void destroy() {
@@ -89,19 +74,16 @@ public class CloudBlock {
 
   public void destroy(Location loc) {
     Block block = loc.getBlock();
-    if (RainUtil.blockIsCloud(block, this)) {
-      block.removeMetadata(METADATA_KEY, cloud.plugin);
-      RainUtil.debug(loc);
-      // block.setType(Material.AIR);
-    }
-
+    if (!RainUtil.blockIsCloud(block, this)) return;
+    block.removeMetadata(METADATA_KEY, cloud.plugin);
+    //RainUtil.debug(loc);
+    block.setType(Material.AIR);
   }
 
   // RAIN
   //
 
   public static void SpawnDroplet(Location loc) {
-
     Location rainLoc = loc.clone();
     rainLoc.add(Math.random(), 0, Math.random());
     rainLoc.getWorld().spawnParticle(Particle.DRIP_WATER, rainLoc, 1);
@@ -129,9 +111,7 @@ public class CloudBlock {
   //
 
   private Location getLoc() {
-    Location loc = cloud.loc.clone();
-    loc.add(offset);
-    return loc;
+    return cloud.loc.clone();
   }
 
   private Location lastLoc() {
@@ -141,25 +121,20 @@ public class CloudBlock {
   }
 
   /**
-   * Get the neighboring free air blocks next to this cloud block; checks all 8
-   * surrounding blocks
-   * 
-   * @param factors control the grow parameters of the cloud;
-   * @return a map of locations containing offset (delta) information from the
-   *         origin
+   * Find adjacent unclouded neighbors 
+   * @param factors grow parameters of the cloud
+   * @return locs mapped to global positions
    */
   public Map<Location, Double> freeNeighbors(Map<String, Double> factors) {
     Map<Location, Double> neighbors = new HashMap<Location, Double>();
     Location loc = getLoc();
 
-    // find neighbors
     for (int y = -1; y <= 1; y++) { // then move up to next layer
       for (int z = -1; z <= 1; z++) { // then add z axis, completing pane ^
         for (int x = -1; x <= 1; x++) { // x axis first ^
-          Location neighborOffset = offset.clone();
+          Location neighborOffset = loc.clone();
           neighborOffset.add(x, y, z);
-
-          // test if free
+          // capture available
           Location neighborWorld = neighborOffset.clone();
           neighborWorld.add(loc);
           if (isAir(neighborWorld) && !isCloud(neighborWorld)) {
@@ -169,7 +144,6 @@ public class CloudBlock {
         }
       }
     }
-
     return neighbors;
   }
 

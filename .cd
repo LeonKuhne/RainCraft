@@ -1,6 +1,6 @@
 #!/bin/bash
 
-info " rain craft"
+info " Rain World"
 debug " LET IT RAIN"
 
 help .cd | indent
