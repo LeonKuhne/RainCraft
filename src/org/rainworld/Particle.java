@@ -18,9 +18,15 @@ public class Particle {
     this.velocity = velocity;
   }
 
+  public String toString() {
+    return String.format(
+      "Particle(mass=%s, position=%s, velocity=%s)",
+      mass, position, velocity
+    );
+  }
+
+  // split particle into two, with half mass and conserving momentum
   public List<Particle> decay(Double decayForce) {
-    // split particle into two new particles
-    // with half the mass and conserving velocities
     List<Particle> particles = new ArrayList<Particle>();
     for (int dir = -1; dir < 2; dir+=2) {
       particles.add(
@@ -37,11 +43,6 @@ public class Particle {
   public void collapse(
     List<Particle> particles, Double collapseRadius
   ) {
-    // attract particles if within range
-    for (Particle particle : particles) {
-      if (particle == this) {
-        continue;
-      }
       Vector delta = particle.position.clone().subtract(position);
       if (delta.length() < collapseRadius) {
         // attract particle
@@ -51,6 +52,6 @@ public class Particle {
         velocity.add(force);
         particle.velocity.subtract(force);
       }
-    } 
+    });
   }
 }

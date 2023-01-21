@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 
 public class RainWorld extends JavaPlugin {
   static final double CLOUD_SPAWN_THRESHOLD = 0.95;
@@ -25,8 +26,8 @@ public class RainWorld extends JavaPlugin {
   public final static int TICKS_PER_MOVE = 3;
   public final static int TICKS_PER_DRAW = 1;
   public final static int TICKS_SPAWNING = 15;
-  public final static int TICKS_PER_DECAY = 200;
-  public final static int TICKS_PER_COLLAPSE = 2;
+  public final static int TICKS_PER_DECAY = 1;
+  public final static int TICKS_PER_COLLAPSE = 1;
   public final static Double DECAY_FORCE = 0.5;
   private static final Double COLLAPSE_RADIUS = 0.1;
 
@@ -64,10 +65,12 @@ public class RainWorld extends JavaPlugin {
   }
 
   private void tick() {
-    List<Particle> newParticles = new ArrayList<Particle>();
+    List<Particle> newParticles;
 
     // decay
+    newParticles = new ArrayList<Particle>();
     if (ticks % TICKS_PER_DECAY == 0) {
+      log.info(ticks + ") Decaying particles");
       for (Particle particle : particles) {
         newParticles.addAll(particle.decay(DECAY_FORCE));
       }
@@ -75,17 +78,22 @@ public class RainWorld extends JavaPlugin {
     }
 
     // collapse
+    newParticles = new ArrayList<Particle>();
     if (ticks % TICKS_PER_COLLAPSE == 0) {
+      log.info(ticks + ") Collapsing particles");
       for (Particle particle : particles) {
+        newParticles.addAll(particle.decay(DECAY_FORCE));
         particle.collapse(particles, COLLAPSE_RADIUS);
       }
       particles = newParticles;
     }
 
+    // combine
+
     // draw
     if (ticks % TICKS_PER_DRAW == 0) {
+      log.info(ticks + "(Particles: " + particles.size());
       particles.forEach(particle -> {
-        
         // TODO turn particle into block location
         //particle.actualize();
         // TODO make block location a cloud if valid
@@ -124,19 +132,18 @@ public class RainWorld extends JavaPlugin {
   }
 
   private void destroyClouds() {
-    while (clouds.size() > 0) {
-      clouds.remove(0).destroy();
-    }
+    particles.clear();
+    clouds.forEach(cloud -> cloud.destroy());
+    clouds.clear();
   }
 
   private void placeCloudAbove(Player player, Map<String, Double> cloudFactors) {
-    // get player xyz
     Location playerLocation = player.getLocation();
     player.sendMessage("You are at " + playerLocation);
-
     // place a cloud
     player.sendMessage("Placing a cloud above you " + player.getDisplayName());
-    clouds.add(new Cloud(this, player, cloudFactors));
+    Vector pos = RainUtil.cloudAbove(playerLocation).toVector();
+    particles.add(new Particle(1.0, pos, new Vector()));
   }
 
   private Map<String, Double> parseCommand(String[] args) {
