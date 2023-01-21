@@ -25,18 +25,26 @@ public class RainWorld extends JavaPlugin {
   public final static int TICKS_PER_MOVE = 3;
   public final static int TICKS_PER_DRAW = 1;
   public final static int TICKS_SPAWNING = 15;
+  public final static int TICKS_PER_DECAY = 200;
+  public final static int TICKS_PER_COLLAPSE = 2;
+  public final static Double DECAY_FORCE = 0.5;
+  private static final Double COLLAPSE_RADIUS = 0.1;
 
   List<Cloud> clouds;
+  List<Particle> particles;
   boolean spawning;
   List<BukkitTask> tasks;
   Logger log;
+  int ticks;
 
   @Override
   public void onEnable() {
     log = getLogger();
+    particles = new ArrayList<Particle>();
     clouds = new ArrayList<Cloud>();
     spawning = true;
     tasks = new ArrayList<BukkitTask>(); // threads
+    ticks = 0;
 
     //
     // ACTIVITIES
@@ -52,20 +60,44 @@ public class RainWorld extends JavaPlugin {
     scheduler.runTaskTimer(this, () -> generateClouds(), 50l, 5l);
 
     // propogate cloud blocks and draw
-    tasks.add(scheduler.runTaskTimer(this, () -> {
+    tasks.add(scheduler.runTaskTimer(this, () -> tick(), 0l, TICK_TIME));
+  }
 
-      // age clouds
-      clouds.forEach(cloud -> cloud.tick(
-        TICKS_PER_SPAWN, TICKS_PER_MOVE, TICKS_PER_DRAW,
-        TICKS_SPAWNING
-      ));
+  private void tick() {
+    List<Particle> newParticles = new ArrayList<Particle>();
 
-    }, 0l, TICK_TIME));
+    // decay
+    if (ticks % TICKS_PER_DECAY == 0) {
+      for (Particle particle : particles) {
+        newParticles.addAll(particle.decay(DECAY_FORCE));
+      }
+      particles = newParticles;
+    }
+
+    // collapse
+    if (ticks % TICKS_PER_COLLAPSE == 0) {
+      for (Particle particle : particles) {
+        particle.collapse(particles, COLLAPSE_RADIUS);
+      }
+      particles = newParticles;
+    }
+
+    // draw
+    if (ticks % TICKS_PER_DRAW == 0) {
+      particles.forEach(particle -> {
+        
+        // TODO turn particle into block location
+        //particle.actualize();
+        // TODO make block location a cloud if valid
+      });
+    }
+
+    ticks++;
   }
 
   @Override
   public void onDisable() {
-    getLogger().info("The rain is ending.");
+    log.info("The rain is ending.");
 
     // stop tasks
     while (tasks.size() > 0) {
@@ -84,7 +116,7 @@ public class RainWorld extends JavaPlugin {
 
         // cloud is high enough
         if (RainUtil.isChosen(cloudLoc.getY(), RainUtil.CLOUD_HEIGHT, CLOUD_SPAWN_THRESHOLD)) {
-          getLogger().info("Cloud formed!");
+          log.info("Cloud formed!");
           clouds.add(new Cloud(this, cloudLoc));
         }
       }
@@ -121,7 +153,7 @@ public class RainWorld extends JavaPlugin {
             Double factor = Double.parseDouble(args.remove(0));
             put(args.remove(0), factor);
           } catch (NumberFormatException e) {
-            getLogger().info("Failed to parse args, not a number");
+            log.info("Failed to parse args, not a number");
           }
         }
       }
@@ -152,21 +184,21 @@ public class RainWorld extends JavaPlugin {
         if (player.hasPermission("cloud.use")) { // check if player is op
           switch (args[0]) {
             case "spawn":
-              getLogger().info("Spawning cloud");
+              log.info("Spawning cloud");
               Map<String, Double> factors = args.length > 2 ? parseCommand(args) : null;
               placeCloudAbove(player, factors);
               break;
             case "stop":
-              getLogger().info("Destroying clouds");
+              log.info("Destroying clouds");
               spawning = false;
               destroyClouds();
               break;
             case "start":
-              getLogger().info("Creating clouds");
+              log.info("Creating clouds");
               spawning = true;
               break;
             default:
-              getLogger().info("Unknown command: " + args[0]);
+              log.info("Unknown command: " + args[0]);
               break;
           }
 
