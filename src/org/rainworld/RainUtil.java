@@ -1,15 +1,22 @@
 package org.rainworld;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 
 public class RainUtil {
   static final int CLOUD_HEIGHT = 20;
@@ -17,6 +24,40 @@ public class RainUtil {
   static final int CLOUD_SPAWN_WIDTH = 50;
   static final int MAX_CLOUDS = 1000;
   static final int RAINDROP_DELAY = 50;
+  static BukkitScheduler scheduler = null;
+  static Plugin plugin = null;
+
+  // THREADING
+  //
+
+  public static BukkitScheduler scheduler(Plugin plugin) {
+    RainUtil.plugin = plugin;
+    RainUtil.scheduler = plugin.getServer().getScheduler();
+    return RainUtil.scheduler;
+  }
+
+  public static BukkitTask async(Runnable task) {
+    return RainUtil.scheduler.runTaskAsynchronously(RainUtil.plugin, task);
+  }
+
+  public static void iterAsync(List<Runnable> tasks) {
+    List<BukkitTask> running = new ArrayList<BukkitTask>();
+    for (Runnable task : tasks) {
+      running.add(RainUtil.async(task));
+    }
+    for (BukkitTask task : running) {
+      while (!task.isDone()) {
+        try {
+          Thread.sleep(10);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+
+  // BLOCKS
+  //
 
   public static boolean blockIsCloud(Block block, CloudBlock otherBlock) {
     List<MetadataValue> meta = block.getMetadata("cloud");
@@ -36,9 +77,6 @@ public class RainUtil {
   public static World getOverworld() {
     return Bukkit.getWorlds().get(0);
   }
-
-  // BLOCK DETECTION
-  //
 
   public static boolean isCloud(Block block) {
     return block.hasMetadata("cloud");
@@ -122,6 +160,14 @@ public class RainUtil {
 
     // move height to ground
     return RainUtil.getGroundAt(groundLoc);
+  }
+
+  public static Vector Random() {
+    return new Vector(
+        ThreadLocalRandom.current().nextInt(-1, 2),
+        ThreadLocalRandom.current().nextInt(-1, 2),
+        ThreadLocalRandom.current().nextInt(-1, 2)
+    );
   }
 
   /**

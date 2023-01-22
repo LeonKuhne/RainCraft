@@ -44,9 +44,9 @@ public class RainWorld extends JavaPlugin {
 
     //
     // EVENTS
-    log.info("The rain is starting.");
+    log.info("The rain is starting...");
     Server server = getServer();
-    BukkitScheduler scheduler = server.getScheduler();
+    BukkitScheduler scheduler = RainUtil.getScheduler(server);
 
     // strike chance if player under cloud
     server.getPluginManager().registerEvents(new PlayerUnderCloud(), this);

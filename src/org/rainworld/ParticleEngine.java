@@ -8,6 +8,7 @@ public class ParticleEngine {
   public static class Config {
     public Double decayForce = 0.5;
     public Double collapseRadius = 0.1;
+    // NOTE adjusting these timings could be interesting
     public int ticksPerDecay = 1;
     public int ticksPerCollapse = 1;
     public int ticksPerMove = 3;
@@ -27,8 +28,8 @@ public class ParticleEngine {
   public void tick() {
     // NOTE reordering these steps could be interesting
     if (ticks % config.ticksPerDecay == 0) decay();
-    if (ticks % config.ticksPerCollapse == 0) collapse();
     if (ticks % config.ticksPerMove == 0) move();
+    if (ticks % config.ticksPerCollapse == 0) collapse();
     if (ticks % config.ticksPerDraw == 0) draw();
     ticks++;
   }
@@ -43,17 +44,22 @@ public class ParticleEngine {
   private void move() {
     // with all of the particles within surrounding chunks
     // atract based on distance
+    RainUtil.iterAsync(particles -> {
+      particle.move();
+    });
+    particles.forEach(null);
 
     // EXTRA
     // attract those that have similar temperatures
     // repel those that have different temperatures 
   }
 
+  // split particles into opposite and random directions
   private void decay() {
     List<Particle> newParticles = new ArrayList<Particle>();
     particles.forEach(particle -> {
       newParticles.addAll(
-        particle.decay(config.decayForce));
+        particle.split(config.decayForce, RainUtil.Random()));
     });
     particles = newParticles;
   }

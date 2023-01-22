@@ -25,16 +25,14 @@ public class Particle {
     );
   }
 
-  // split particle into two, with half mass and conserving momentum
-  public List<Particle> decay(Double decayForce) {
+  // split particle with half mass conserving momentum
+  public List<Particle> split(Double force, Vector direction) {
     List<Particle> particles = new ArrayList<Particle>();
     for (int dir = -1; dir < 2; dir+=2) {
+      Vector velocity = direction.multiply(force / mass * dir);
+      velocity.add(this.velocity);
       particles.add(
-        new Particle(
-          mass / 2,
-          position.clone(),
-          velocity.clone().multiply(decayForce / mass * dir)
-        )
+        new Particle(mass / 2, position.clone(), velocity)
       ); 
     } 
     return particles;
