@@ -39,19 +39,4 @@ public class Particle {
     } 
     return particles;
   }
-
-  public void collapse(
-    List<Particle> particles, Double collapseRadius
-  ) {
-      Vector delta = particle.position.clone().subtract(position);
-      if (delta.length() < collapseRadius) {
-        // attract particle
-        Vector force = delta.clone().normalize().multiply(
-          mass * particle.mass / delta.lengthSquared()
-        );
-        velocity.add(force);
-        particle.velocity.subtract(force);
-      }
-    });
-  }
 }

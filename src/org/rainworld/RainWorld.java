@@ -23,20 +23,14 @@ public class RainWorld extends JavaPlugin {
   static final double CLOUD_SPAWN_THRESHOLD = 0.95;
   public final static long TICK_TIME = 15;
   public final static int TICKS_PER_SPAWN = 15;
-  public final static int TICKS_PER_MOVE = 3;
-  public final static int TICKS_PER_DRAW = 1;
   public final static int TICKS_SPAWNING = 15;
-  public final static int TICKS_PER_DECAY = 1;
-  public final static int TICKS_PER_COLLAPSE = 1;
-  public final static Double DECAY_FORCE = 0.5;
-  private static final Double COLLAPSE_RADIUS = 0.1;
 
-  List<Cloud> clouds;
-  List<Particle> particles;
-  boolean spawning;
-  List<BukkitTask> tasks;
-  Logger log;
-  int ticks;
+  private List<Cloud> clouds;
+  private List<Particle> particles;
+  private boolean spawning;
+  private List<BukkitTask> tasks;
+  private Logger log;
+  private ParticleEngine engine;
 
   @Override
   public void onEnable() {
@@ -45,11 +39,11 @@ public class RainWorld extends JavaPlugin {
     clouds = new ArrayList<Cloud>();
     spawning = true;
     tasks = new ArrayList<BukkitTask>(); // threads
-    ticks = 0;
+    ParticleEngine.Config defaultConfig = new ParticleEngine.Config();
+    engine = new ParticleEngine(defaultConfig);
 
     //
-    // ACTIVITIES
-
+    // EVENTS
     log.info("The rain is starting.");
     Server server = getServer();
     BukkitScheduler scheduler = server.getScheduler();
@@ -61,46 +55,7 @@ public class RainWorld extends JavaPlugin {
     scheduler.runTaskTimer(this, () -> generateClouds(), 50l, 5l);
 
     // propogate cloud blocks and draw
-    tasks.add(scheduler.runTaskTimer(this, () -> tick(), 0l, TICK_TIME));
-  }
-
-  private void tick() {
-    List<Particle> newParticles;
-
-    // decay
-    newParticles = new ArrayList<Particle>();
-    if (ticks % TICKS_PER_DECAY == 0) {
-      log.info(ticks + ") Decaying particles");
-      for (Particle particle : particles) {
-        newParticles.addAll(particle.decay(DECAY_FORCE));
-      }
-      particles = newParticles;
-    }
-
-    // collapse
-    newParticles = new ArrayList<Particle>();
-    if (ticks % TICKS_PER_COLLAPSE == 0) {
-      log.info(ticks + ") Collapsing particles");
-      for (Particle particle : particles) {
-        newParticles.addAll(particle.decay(DECAY_FORCE));
-        particle.collapse(particles, COLLAPSE_RADIUS);
-      }
-      particles = newParticles;
-    }
-
-    // combine
-
-    // draw
-    if (ticks % TICKS_PER_DRAW == 0) {
-      log.info(ticks + "(Particles: " + particles.size());
-      particles.forEach(particle -> {
-        // TODO turn particle into block location
-        //particle.actualize();
-        // TODO make block location a cloud if valid
-      });
-    }
-
-    ticks++;
+    tasks.add(scheduler.runTaskTimer(this, () -> engine.tick(), 0l, TICK_TIME));
   }
 
   @Override
