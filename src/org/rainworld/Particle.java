@@ -18,11 +18,8 @@ public class Particle {
     this.velocity = velocity;
   }
 
-  public String toString() {
-    return String.format(
-      "Particle(mass=%s, position=%s, velocity=%s)",
-      mass, position, velocity
-    );
+  public void move() {
+    position.add(velocity);
   }
 
   // split particle with half mass conserving momentum
@@ -36,5 +33,12 @@ public class Particle {
       ); 
     } 
     return particles;
+  }
+
+  public String toString() {
+    return String.format(
+      "Particle(mass=%s, position=%s, velocity=%s)",
+      mass, position, velocity
+    );
   }
 }

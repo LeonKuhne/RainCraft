@@ -13,11 +13,12 @@ public class ParticleEngine {
     public int ticksPerCollapse = 1;
     public int ticksPerMove = 3;
     public int ticksPerDraw = 1;
+    public int ticksPerAttract = 3;
   }
 
   Config config;
-  private List<Particle> particles;
-  private int ticks;  
+  private TODO<Particle> particles;
+  private int ticks;
 
   public ParticleEngine(Config config) {
     particles = new ArrayList<Particle>();
@@ -29,6 +30,7 @@ public class ParticleEngine {
     // NOTE reordering these steps could be interesting
     if (ticks % config.ticksPerDecay == 0) decay();
     if (ticks % config.ticksPerMove == 0) move();
+    if (ticks % config.ticksPerAttract == 0) attract();
     if (ticks % config.ticksPerCollapse == 0) collapse();
     if (ticks % config.ticksPerDraw == 0) draw();
     ticks++;
@@ -42,16 +44,13 @@ public class ParticleEngine {
   }
 
   private void move() {
-    // with all of the particles within surrounding chunks
-    // atract based on distance
-    RainUtil.iterAsync(particles -> {
-      particle.move();
-    });
-    particles.forEach(null);
+    // apply velocities
+  }
 
-    // EXTRA
-    // attract those that have similar temperatures
-    // repel those that have different temperatures 
+  // EXTRA: attract/repel similar/dissimilar temperatures
+  private void attract() {
+    // find all particles in this and surrounding chunks
+    // attract based on distance
   }
 
   // split particles into opposite and random directions

@@ -1,9 +1,13 @@
 package org.rainworld;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -26,33 +30,40 @@ public class RainUtil {
   static final int RAINDROP_DELAY = 50;
   static BukkitScheduler scheduler = null;
   static Plugin plugin = null;
+  static Map<Integer, Integer> sessions = new HashMap<Integer, Integer>();
 
   // THREADING
   //
 
   public static BukkitScheduler scheduler(Plugin plugin) {
     RainUtil.plugin = plugin;
-    RainUtil.scheduler = plugin.getServer().getScheduler();
-    return RainUtil.scheduler;
+    scheduler = plugin.getServer().getScheduler();
+    return scheduler;
+  }
+
+  private static void decrement(int sessionId) {
+    sessions.put(sessionId, sessions.get(sessionId) - 1);
   }
 
   public static BukkitTask async(Runnable task) {
-    return RainUtil.scheduler.runTaskAsynchronously(RainUtil.plugin, task);
+    return scheduler.runTaskAsynchronously(plugin, task);
   }
 
-  public static void iterAsync(List<Runnable> tasks) {
-    List<BukkitTask> running = new ArrayList<BukkitTask>();
-    for (Runnable task : tasks) {
-      running.add(RainUtil.async(task));
+  public static <T> void iterAsync(List<T> items, Consumer<T> callback) {
+    int sessionId = callback.hashCode();
+    sessions.put(sessionId, items.size());
+    for (T item : items) {
+      async(() -> {
+        callback.accept(item);
+        callback.andThen((t) -> {
+          decrement(callback.hashCode());
+        });
+      });
     }
-    for (BukkitTask task : running) {
-      while (!task.isDone()) {
-        try {
-          Thread.sleep(10);
-        } catch (InterruptedException e) {
-          e.printStackTrace();
-        }
-      }
+
+    while (sessions.get(sessionId) > 0) {
+      try { Thread.sleep(10); }
+      catch (InterruptedException e) { e.printStackTrace(); }
     }
   }
 
