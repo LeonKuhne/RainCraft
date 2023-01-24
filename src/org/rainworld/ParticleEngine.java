@@ -2,7 +2,7 @@ package org.rainworld;
 
 import java.util.ArrayList;
 import java.util.List;
-//import weka.clusters.SimpleKMeans;
+import weka.clusterers.SimpleKMeans;
 
 public class ParticleEngine {
   public static class Config {
@@ -17,7 +17,7 @@ public class ParticleEngine {
   }
 
   Config config;
-  private TODO<Particle> particles;
+  private List<Particle> particles;
   private int ticks;
 
   public ParticleEngine(Config config) {
@@ -38,7 +38,11 @@ public class ParticleEngine {
 
   // combine particles
   private void collapse() {
+    int numClusters = 5;
     // find kmeans clusters
+    SimpleKMeans kmeans = new SimpleKMeans();
+    kmeans.setNumClusters(numClusters);
+    kmeans.buildClusters(particles);
     // combine tightest clusters
     // update particles
   }
