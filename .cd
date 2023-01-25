@@ -13,7 +13,7 @@ rain_build="$rain_home/build"
 rain_dist="$rain_home/dist"
 
 function build() {
-  mvn package 
+  mvn clean compile assembly:single
 }
 
 function test() {
