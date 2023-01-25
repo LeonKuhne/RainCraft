@@ -3,6 +3,8 @@ package org.rainworld;
 import java.util.ArrayList;
 import java.util.List;
 import weka.clusterers.SimpleKMeans;
+import weka.core.Attribute;
+import weka.core.Instances;
 
 public class ParticleEngine {
   public static class Config {
@@ -18,12 +20,19 @@ public class ParticleEngine {
 
   Config config;
   private List<Particle> particles;
+  private Instances particleInstances;
   private int ticks;
 
   public ParticleEngine(Config config) {
     particles = new ArrayList<Particle>();
     this.config = config;
     ticks = 0;
+    ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+    attributes.add(new Attribute("x"));
+    attributes.add(new Attribute("y"));
+    attributes.add(new Attribute("z"));
+    attributes.add(new Attribute("temperature"));
+    particleInstances = new Instances("Particles", attributes, 0);
   }
 
   public void tick() {
@@ -41,14 +50,20 @@ public class ParticleEngine {
     int numClusters = 5;
     // find kmeans clusters
     SimpleKMeans kmeans = new SimpleKMeans();
-    kmeans.setNumClusters(numClusters);
-    kmeans.buildClusters(particles);
+    try {
+      kmeans.setNumClusters(numClusters);
+      kmeans.buildClusterer(particleInstances);
+      System.out.println("collapsed clusters");
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
     // combine tightest clusters
     // update particles
   }
 
   private void move() {
-    // apply velocities
+    particles.forEach(particle -> particle.move());
   }
 
   // EXTRA: attract/repel similar/dissimilar temperatures

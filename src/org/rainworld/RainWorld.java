@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -45,11 +44,10 @@ public class RainWorld extends JavaPlugin {
     //
     // EVENTS
     log.info("The rain is starting...");
-    Server server = getServer();
-    BukkitScheduler scheduler = RainUtil.getScheduler(server);
+    BukkitScheduler scheduler = RainUtil.scheduler(this);
 
     // strike chance if player under cloud
-    server.getPluginManager().registerEvents(new PlayerUnderCloud(), this);
+    getServer().getPluginManager().registerEvents(new PlayerUnderCloud(), this);
 
     // spawn clouds near players
     scheduler.runTaskTimer(this, () -> generateClouds(), 50l, 5l);

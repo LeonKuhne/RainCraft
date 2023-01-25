@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.util.Vector;
+import weka.core.DenseInstance;
 
-public class Particle {
+public class Particle extends DenseInstance {
   private Double mass;
   private Vector position;
   private Vector velocity;
@@ -13,6 +14,7 @@ public class Particle {
   public Particle(
     Double mass, Vector position, Vector velocity
   ) {
+    super(4); // x, y, z, temperature
     this.mass = mass;
     this.position = position;
     this.velocity = velocity;
@@ -22,7 +24,7 @@ public class Particle {
     position.add(velocity);
   }
 
-  // split particle with half mass conserving momentum
+  // split particle in two with half mass conserving momentum
   public List<Particle> split(Double force, Vector direction) {
     List<Particle> particles = new ArrayList<Particle>();
     for (int dir = -1; dir < 2; dir+=2) {
