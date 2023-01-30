@@ -19,12 +19,10 @@ public class CloudBlock {
 
   protected Cloud cloud;
   protected int id;
-  private Location offset;
 
   // Grow Cloud
   public CloudBlock(Cloud cloud, Location offset) {
     this.cloud = cloud;
-    this.offset = offset; // offset from center of cloud
   }
 
   // Origin Cloud

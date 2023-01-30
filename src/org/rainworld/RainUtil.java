@@ -1,8 +1,9 @@
 package org.rainworld;
-
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -10,13 +11,43 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 
 public class RainUtil {
-  static final int CLOUD_HEIGHT = 20;
-  static final int CLOUD_VARIANCE = 10;
-  static final int CLOUD_SPAWN_WIDTH = 50;
-  static final int MAX_CLOUDS = 1000;
-  static final int RAINDROP_DELAY = 50;
+  static Map<Integer, Integer> sessions = new HashMap<Integer, Integer>();
+
+  // THREADING
+  //
+
+  private static void decrement(int sessionId) {
+    sessions.put(sessionId, sessions.get(sessionId) - 1);
+  }
+
+  public static BukkitTask async(Runnable task) {
+    return Rain.scheduler.runTaskAsynchronously(Rain.plugin, task);
+  }
+
+  public static <T> void iterAsync(List<T> items, Consumer<T> callback) {
+    int sessionId = callback.hashCode();
+    sessions.put(sessionId, items.size());
+    for (T item : items) {
+      async(() -> {
+        callback.accept(item);
+        callback.andThen((t) -> {
+          decrement(callback.hashCode());
+        });
+      });
+    }
+
+    while (sessions.get(sessionId) > 0) {
+      try { Thread.sleep(10); }
+      catch (InterruptedException e) { e.printStackTrace(); }
+    }
+  }
+
+  // BLOCKS
+  //
 
   public static boolean blockIsCloud(Block block, CloudBlock otherBlock) {
     List<MetadataValue> meta = block.getMetadata("cloud");
@@ -36,9 +67,6 @@ public class RainUtil {
   public static World getOverworld() {
     return Bukkit.getWorlds().get(0);
   }
-
-  // BLOCK DETECTION
-  //
 
   public static boolean isCloud(Block block) {
     return block.hasMetadata("cloud");
@@ -79,7 +107,7 @@ public class RainUtil {
 
   public static Location cloudAbove(Location loc) {
     Location cloudLoc = loc.clone();
-    int height = CLOUD_HEIGHT + (int) Math.round(Math.random() * CLOUD_VARIANCE);
+    int height = Rain.config.cloudHeight + (int) Math.round(Math.random() * Rain.config.cloudVariance);
     cloudLoc.add(0, height, 0);
     return cloudLoc;
   }
@@ -93,7 +121,7 @@ public class RainUtil {
 
   public static double rollDice(double cloudHeight, double floorHeight, double extraFactor) {
     double percentWorldHeight = cloudHeight / (getOverworld().getMaxHeight());
-    double percentCloudHeight = Math.abs(floorHeight / CLOUD_HEIGHT);
+    double percentCloudHeight = Math.abs(floorHeight / Rain.config.cloudHeight);
 
     // create factors
     double diceFactor = Math.random();
@@ -122,6 +150,14 @@ public class RainUtil {
 
     // move height to ground
     return RainUtil.getGroundAt(groundLoc);
+  }
+
+  public static Vector Random() {
+    return new Vector(
+        ThreadLocalRandom.current().nextInt(-1, 2),
+        ThreadLocalRandom.current().nextInt(-1, 2),
+        ThreadLocalRandom.current().nextInt(-1, 2)
+    );
   }
 
   /**
