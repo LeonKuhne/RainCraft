@@ -17,12 +17,17 @@ function build() {
   #mvn install
 }
 
-function test() {
-  build
-  cp target/rainworld-1.0-SNAPSHOT.jar test/plugins/RainWorld.jar
+function upload() {
+  jar=target/rainworld-1.0-SNAPSHOT-jar-with-dependencies.jar
+  cp $jar test/plugins/RainWorld.jar
   cd test
   ./run.sh test
   cc ..
+}
+
+function test() {
+  build
+  upload
 }
 
 function dev() {

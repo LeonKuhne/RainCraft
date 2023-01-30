@@ -8,5 +8,6 @@ api-version: 1.19
 author: leonk.dev 
 website: info.dankpiss.art
 commands:
-  clouds: 
+  rain: 
     description: "Let it rain!"
+    usage: /<command> [cloud|stop|start|watch|ignore]

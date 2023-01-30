@@ -1,11 +1,9 @@
 package org.rainworld;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,36 +11,21 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 public class RainUtil {
-  static final int CLOUD_HEIGHT = 20;
-  static final int CLOUD_VARIANCE = 10;
-  static final int CLOUD_SPAWN_WIDTH = 50;
-  static final int MAX_CLOUDS = 1000;
-  static final int RAINDROP_DELAY = 50;
-  static BukkitScheduler scheduler = null;
-  static Plugin plugin = null;
   static Map<Integer, Integer> sessions = new HashMap<Integer, Integer>();
 
   // THREADING
   //
-
-  public static BukkitScheduler scheduler(Plugin plugin) {
-    RainUtil.plugin = plugin;
-    scheduler = plugin.getServer().getScheduler();
-    return scheduler;
-  }
 
   private static void decrement(int sessionId) {
     sessions.put(sessionId, sessions.get(sessionId) - 1);
   }
 
   public static BukkitTask async(Runnable task) {
-    return scheduler.runTaskAsynchronously(plugin, task);
+    return Rain.scheduler.runTaskAsynchronously(Rain.plugin, task);
   }
 
   public static <T> void iterAsync(List<T> items, Consumer<T> callback) {
@@ -124,7 +107,7 @@ public class RainUtil {
 
   public static Location cloudAbove(Location loc) {
     Location cloudLoc = loc.clone();
-    int height = CLOUD_HEIGHT + (int) Math.round(Math.random() * CLOUD_VARIANCE);
+    int height = Rain.config.cloudHeight + (int) Math.round(Math.random() * Rain.config.cloudVariance);
     cloudLoc.add(0, height, 0);
     return cloudLoc;
   }
@@ -138,7 +121,7 @@ public class RainUtil {
 
   public static double rollDice(double cloudHeight, double floorHeight, double extraFactor) {
     double percentWorldHeight = cloudHeight / (getOverworld().getMaxHeight());
-    double percentCloudHeight = Math.abs(floorHeight / CLOUD_HEIGHT);
+    double percentCloudHeight = Math.abs(floorHeight / Rain.config.cloudHeight);
 
     // create factors
     double diceFactor = Math.random();

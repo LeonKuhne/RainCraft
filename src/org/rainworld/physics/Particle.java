@@ -1,4 +1,4 @@
-package org.rainworld;
+package org.rainworld.physics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,9 +7,9 @@ import org.bukkit.util.Vector;
 import weka.core.DenseInstance;
 
 public class Particle extends DenseInstance {
-  private Double mass;
-  private Vector position;
-  private Vector velocity;
+  public Double mass;
+  public Vector position;
+  public Vector velocity;
 
   public Particle(
     Double mass, Vector position, Vector velocity
