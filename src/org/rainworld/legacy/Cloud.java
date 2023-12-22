@@ -1,4 +1,4 @@
-package org.rainworld;
+package org.rainworld.legacy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +8,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.rainworld.RainUtil;
 
 public class Cloud {
   public final static int MAX_SIZE = 50;

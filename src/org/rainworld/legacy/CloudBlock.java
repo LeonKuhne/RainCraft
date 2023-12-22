@@ -1,4 +1,4 @@
-package org.rainworld;
+package org.rainworld.legacy;
 import static org.rainworld.RainUtil.isAir;
 import static org.rainworld.RainUtil.isCloud;
 import java.util.HashMap;
@@ -10,6 +10,7 @@ import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
+import org.rainworld.RainUtil;
 
 public class CloudBlock {
   static final int MAX_RAIN_DELAY = 50;

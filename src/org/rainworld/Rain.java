@@ -18,6 +18,7 @@ public class Rain {
   public static List<BukkitTask> tasks;
   public static List<Player> subscribers;
   public static Config config;
+  public static List<String> lastMessages;
 
   public static void init(Plugin plugin) {
     Rain.plugin = plugin;
@@ -27,6 +28,7 @@ public class Rain {
     tasks = new ArrayList<BukkitTask>();
     subscribers = new ArrayList<Player>();
     config = new Config();
+    lastMessages = new ArrayList<String>();
   }
 
   // LOGGING
@@ -43,8 +45,13 @@ public class Rain {
     }
   }
   public static void log(String msg) {
+    if (lastMessages.contains(msg)) return;
     logger.info(msg);
     subscribers.forEach(player -> player.sendMessage(msg));
+    lastMessages.add(msg);
+    if (lastMessages.size() > Rain.config.duplicateHistory) {
+      lastMessages.remove(0);
+    }
   }
 
   // THREADING

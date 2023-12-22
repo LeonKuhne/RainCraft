@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+import org.rainworld.legacy.CloudBlock;
 
 public class RainUtil {
   static Map<Integer, Integer> sessions = new HashMap<Integer, Integer>();
@@ -116,7 +117,11 @@ public class RainUtil {
   //
 
   public static void debug(Location loc) {
-    loc.getBlock().setType(Material.REDSTONE_BLOCK);
+    fill(loc, Material.REDSTONE_BLOCK);
+  }
+
+  public static void fill(Location loc, Material material) {
+    loc.getBlock().setType(material);
   }
 
   public static double rollDice(double cloudHeight, double floorHeight, double extraFactor) {
@@ -154,9 +159,9 @@ public class RainUtil {
 
   public static Vector Random() {
     return new Vector(
-        ThreadLocalRandom.current().nextInt(-1, 2),
-        ThreadLocalRandom.current().nextInt(-1, 2),
-        ThreadLocalRandom.current().nextInt(-1, 2)
+        ThreadLocalRandom.current().nextDouble() * 2 - 1,
+        ThreadLocalRandom.current().nextDouble() * 2 - 1,
+        ThreadLocalRandom.current().nextDouble() * 2 - 1
     );
   }
 
@@ -181,5 +186,18 @@ public class RainUtil {
     }
 
     return factor;
+  }
+
+
+  public static Double cosineSimilarity(Vector a, Vector b) {
+    return a.dot(b) / (a.length() * b.length());
+  }
+
+  public static Vector tanh(Vector vec) {
+    return new Vector(
+      Math.tanh(vec.getX()),
+      Math.tanh(vec.getY()),
+      Math.tanh(vec.getZ())
+    );
   }
 }

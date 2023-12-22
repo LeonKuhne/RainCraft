@@ -3,19 +3,31 @@ package org.rainworld;
 import java.lang.reflect.Field;
 
 import org.bukkit.ChatColor;
+import org.bukkit.util.Vector;
 
 public class Config {
   // timings
-  public int ticksPerSpawn = 15;
-  public int ticksPerDecay = 3;
-  public int ticksPerCollapse = 15;
-  public int ticksPerMove = 3;
+  public int ticksPerSpawn = 6;
+  public int ticksPerDecay = 1;
+  public int ticksPerInteract = 1;
+  public int ticksPerMove = 1;
   public int ticksPerDraw = 1;
-  public int ticksPerAttract = 3;
+  public int ticksPerAttract = 1;
   // physics
-  public Double decayForce = 1.0;
-  public Double collapseRadius = 0.1;
+  public double maxVelocity = 1.0;
+  public double collapseRadius = 0.1;
   // spawning
+  public int particlesPerSpawn = 20;
+  public double particleSpawnMass = 1;
+  public double combineThreshold = 0.99;
+  public double attractDistance = 10; // measured in blocks
+  public double attractForce = 0.1;
+  public double cloudSpeed = 0.001;
+  public double frictionForce = 0.001;
+  public double jitterDistance = 0.01;
+  // debug
+  public int duplicateHistory = 5;
+  // legacy
   public int cloudHeight = 20;
   public int cloudVariance = 10;
   public int cloudSpawnWidth = 50;
@@ -35,7 +47,16 @@ public class Config {
   public void set(String key, String value) {
     try {
       Field field = this.getClass().getField(key);
-      field.set(this, value);
+      // parse to correct type
+      if (field.getType() == int.class) {
+        field.set(this, Integer.parseInt(value));
+      } else if (field.getType() == double.class) {
+        field.set(this, Double.parseDouble(value));
+      } else if (field.getType() == boolean.class) {
+        field.set(this, Boolean.parseBoolean(value));
+      } else {
+        field.set(this, value);
+      }
     } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
       e.printStackTrace();
     }

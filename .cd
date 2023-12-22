@@ -19,12 +19,12 @@ function build() {
 
 function upload() {
   if [ ! -d "test" ]; then
-    err "Expected test server at ./test" && return
+    err "Expected test server directory 'test' containing script 'start.sh'" && return
   fi
   
   jar=target/rainworld-1.0-SNAPSHOT-jar-with-dependencies.jar
   cp $jar test/plugins/RainWorld.jar
-  (cd test && ./run.sh test)
+  (cd test && ./start.sh)
 }
 
 function test() {
