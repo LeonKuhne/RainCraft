@@ -29,6 +29,8 @@ public class Rain {
     subscribers = new ArrayList<Player>();
     config = new Config();
     lastMessages = new ArrayList<String>();
+    // sort colors by threshold
+    Rain.config.colors.sort((a, b) -> a.getValue().compareTo(b.getValue()));
   }
 
   // LOGGING

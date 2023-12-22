@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-
 import org.bukkit.ChatColor;
 
 public class Config {
@@ -31,7 +30,6 @@ public class Config {
   // debug
   public int duplicateHistory = 5;
   // legacy
-  public int cloudHeight = 20;
   public int cloudVariance = 10;
   public int cloudSpawnWidth = 50;
   public int maxClouds = 1000;
@@ -39,8 +37,15 @@ public class Config {
   public double cloudSpawnThreshold = 0.95;
   // NEW
   public int colorScale = 3; 
+  public boolean showHeatMap = false;
   public double minTemperature = 1 / Math.pow(6, 27); // 6 sides, n blocks above from peak
-  public List<Entry<String, Double>> colors = new ArrayList<>(); 
+  public int cloudHeight = 35;
+  public int cloudThickness = 3;
+  public double cloudMinTemperature = 1 / Math.pow(6, cloudHeight + cloudThickness);
+  public double cloudMaxTemperature = 1 / Math.pow(6, cloudHeight);
+  public double spawnHumidity = 0.5;
+  public double humiditySpreadThreshold = 0.5;
+  public List<Entry<String, Double>> colors = new ArrayList<>();
   {
     // map blue->red stained glass materials to temperature thresholds
     colors.add(new HashMap.SimpleEntry<String, Double>("BLUE_STAINED_GLASS", colorize(8)));
@@ -50,8 +55,8 @@ public class Config {
     colors.add(new HashMap.SimpleEntry<String, Double>("LIME_STAINED_GLASS", colorize(4)));
     colors.add(new HashMap.SimpleEntry<String, Double>("YELLOW_STAINED_GLASS", colorize(3)));
     colors.add(new HashMap.SimpleEntry<String, Double>("ORANGE_STAINED_GLASS", colorize(2)));
-    colors.add(new HashMap.SimpleEntry<String, Double>("RED_STAINED_GLASS", colorize(1)));
-    colors.add(new HashMap.SimpleEntry<String, Double>("MAGENTA_STAINED_GLASS", colorize(0)));
+    colors.add(new HashMap.SimpleEntry<String, Double>("MAGENTA_STAINED_GLASS", colorize(1)));
+    colors.add(new HashMap.SimpleEntry<String, Double>("RED_STAINED_GLASS", colorize(0)));
   }
 
   private double colorize(int distance) {
