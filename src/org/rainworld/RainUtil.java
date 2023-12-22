@@ -1,14 +1,18 @@
 package org.rainworld;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitTask;
@@ -199,5 +203,70 @@ public class RainUtil {
       Math.tanh(vec.getY()),
       Math.tanh(vec.getZ())
     );
+  }
+
+  public static Block[] neighbors(Block block) {
+    return new Block[] {
+      block.getRelative(BlockFace.UP),
+      block.getRelative(BlockFace.DOWN),
+      block.getRelative(BlockFace.NORTH),
+      block.getRelative(BlockFace.SOUTH),
+      block.getRelative(BlockFace.EAST),
+      block.getRelative(BlockFace.WEST)
+    };
+  }
+
+  public static Chunk[] neighbors(Chunk chunk) {
+    return new Chunk[] {
+      chunk.getWorld().getChunkAt(chunk.getX() + 1, chunk.getZ()),
+      chunk.getWorld().getChunkAt(chunk.getX() - 1, chunk.getZ()),
+      chunk.getWorld().getChunkAt(chunk.getX(), chunk.getZ() + 1),
+      chunk.getWorld().getChunkAt(chunk.getX(), chunk.getZ() - 1)
+    };
+  }
+
+  public static Set<Block> allBlocks() {
+    Set<Chunk> chunks = new HashSet<Chunk>();
+    for (World world : Bukkit.getWorlds()) {
+      for (Chunk chunk : world.getLoadedChunks()) {
+        chunks.add(chunk);
+      }
+    }
+    return allBlocks(chunks);
+  }
+
+  public static Set<Block> allBlocks(Chunk chunk) {
+    return allBlocks(new HashSet<Chunk>() {{ add(chunk); }});
+  }
+
+  public static Set<Block> allBlocks(Set<Chunk> chunks) {
+    Set<Block> blocks = new HashSet<Block>();
+    for (Chunk chunk : chunks) {
+      int maxHeight = chunk.getWorld().getMaxHeight(); 
+      for (int x = 0; x < 16; x++) {
+        for (int z = 0; z < 16; z++) {
+          for (int y = 0; y < maxHeight; y++) {
+            blocks.add(chunk.getBlock(x, y, z)); 
+          }
+        }
+      }
+    }
+    return blocks;
+  }
+
+  public static Set<Block> topBlocks(Chunk playerChunk) {
+    Set<Block> blocks = new HashSet<Block>();
+    for (int x = 0; x < 16; x++) {
+      for (int z = 0; z < 16; z++) {
+        Location chunkLoc = playerChunk.getBlock(x, 0, z).getLocation();
+        Block block = playerChunk.getWorld().getHighestBlockAt(chunkLoc);
+        blocks.add(block);
+      }
+    }
+    return blocks;
+  }
+
+  public static boolean sameChunk(Block block, Block neighbor) {
+    return block.getChunk().equals(neighbor.getChunk());
   }
 }

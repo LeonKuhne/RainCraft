@@ -1,9 +1,12 @@
 package org.rainworld;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
-import org.bukkit.util.Vector;
 
 public class Config {
   // timings
@@ -34,6 +37,20 @@ public class Config {
   public int maxClouds = 1000;
   public int raindropDelay = 50;
   public double cloudSpawnThreshold = 0.95;
+  // NEW
+  public double minTemperature = 1 / Math.pow(6, 8); // 6 sides, n blocks above from peak
+  public List<Entry<String, Double>> colors = new ArrayList<>(); 
+  {
+    // map blue->red stained glass materials to temperature thresholds
+    colors.add(new HashMap.SimpleEntry<String, Double>("BLUE_STAINED_GLASS", 1 / Math.pow(6, 7)));
+    colors.add(new HashMap.SimpleEntry<String, Double>("LIGHT_BLUE_STAINED_GLASS", 1 / Math.pow(6, 6)));
+    colors.add(new HashMap.SimpleEntry<String, Double>("CYAN_STAINED_GLASS", 1 / Math.pow(6, 5)));
+    colors.add(new HashMap.SimpleEntry<String, Double>("GREEN_STAINED_GLASS", 1 / Math.pow(6, 4)));
+    colors.add(new HashMap.SimpleEntry<String, Double>("LIME_STAINED_GLASS", 1 / Math.pow(6, 3)));
+    colors.add(new HashMap.SimpleEntry<String, Double>("YELLOW_STAINED_GLASS", 1 / Math.pow(6, 2)));
+    colors.add(new HashMap.SimpleEntry<String, Double>("ORANGE_STAINED_GLASS", 1 / Math.pow(6, 1)));
+    colors.add(new HashMap.SimpleEntry<String, Double>("RED_STAINED_GLASS", 1 / Math.pow(6, 0)));
+  }
 
   public boolean has(String key) {
     try {

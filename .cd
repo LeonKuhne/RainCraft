@@ -3,6 +3,11 @@
 info " Rain World"
 debug " LET IT RAIN"
 
+warn "TODO"
+debug "- give all air a temperature"
+debug "- visualize temperature using stained glass"
+debug "???? - give all air a humidity"
+
 help .cd | indent
 
 # setup directories
