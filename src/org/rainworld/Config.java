@@ -38,18 +38,24 @@ public class Config {
   public int raindropDelay = 50;
   public double cloudSpawnThreshold = 0.95;
   // NEW
-  public double minTemperature = 1 / Math.pow(6, 8); // 6 sides, n blocks above from peak
+  public int colorScale = 3; 
+  public double minTemperature = 1 / Math.pow(6, 27); // 6 sides, n blocks above from peak
   public List<Entry<String, Double>> colors = new ArrayList<>(); 
   {
     // map blue->red stained glass materials to temperature thresholds
-    colors.add(new HashMap.SimpleEntry<String, Double>("BLUE_STAINED_GLASS", 1 / Math.pow(6, 7)));
-    colors.add(new HashMap.SimpleEntry<String, Double>("LIGHT_BLUE_STAINED_GLASS", 1 / Math.pow(6, 6)));
-    colors.add(new HashMap.SimpleEntry<String, Double>("CYAN_STAINED_GLASS", 1 / Math.pow(6, 5)));
-    colors.add(new HashMap.SimpleEntry<String, Double>("GREEN_STAINED_GLASS", 1 / Math.pow(6, 4)));
-    colors.add(new HashMap.SimpleEntry<String, Double>("LIME_STAINED_GLASS", 1 / Math.pow(6, 3)));
-    colors.add(new HashMap.SimpleEntry<String, Double>("YELLOW_STAINED_GLASS", 1 / Math.pow(6, 2)));
-    colors.add(new HashMap.SimpleEntry<String, Double>("ORANGE_STAINED_GLASS", 1 / Math.pow(6, 1)));
-    colors.add(new HashMap.SimpleEntry<String, Double>("RED_STAINED_GLASS", 1 / Math.pow(6, 0)));
+    colors.add(new HashMap.SimpleEntry<String, Double>("BLUE_STAINED_GLASS", colorize(8)));
+    colors.add(new HashMap.SimpleEntry<String, Double>("LIGHT_BLUE_STAINED_GLASS", colorize(7)));
+    colors.add(new HashMap.SimpleEntry<String, Double>("CYAN_STAINED_GLASS", colorize(6)));
+    colors.add(new HashMap.SimpleEntry<String, Double>("GREEN_STAINED_GLASS", colorize(5)));
+    colors.add(new HashMap.SimpleEntry<String, Double>("LIME_STAINED_GLASS", colorize(4)));
+    colors.add(new HashMap.SimpleEntry<String, Double>("YELLOW_STAINED_GLASS", colorize(3)));
+    colors.add(new HashMap.SimpleEntry<String, Double>("ORANGE_STAINED_GLASS", colorize(2)));
+    colors.add(new HashMap.SimpleEntry<String, Double>("RED_STAINED_GLASS", colorize(1)));
+    colors.add(new HashMap.SimpleEntry<String, Double>("MAGENTA_STAINED_GLASS", colorize(0)));
+  }
+
+  private double colorize(int distance) {
+    return 1 / Math.pow(6, distance * colorScale);
   }
 
   public boolean has(String key) {
