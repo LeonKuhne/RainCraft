@@ -4,9 +4,8 @@ info " Rain World"
 debug " LET IT RAIN"
 
 warn "TODO"
-debug "- give all air a temperature"
-debug "- visualize temperature using stained glass"
-debug "???? - give all air a humidity"
+debug "- refactor temperature to use tracked gradient during algo"
+debug "- add humidity that follows heat gradient"
 
 help .cd | indent
 

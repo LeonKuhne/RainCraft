@@ -1,6 +1,7 @@
 package org.rainworld;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Logger;
 
 import org.bukkit.Server;
@@ -19,6 +20,7 @@ public class Rain {
   public static List<Player> subscribers;
   public static Config config;
   public static List<String> lastMessages;
+  public static Random rng;
 
   public static void init(Plugin plugin) {
     Rain.plugin = plugin;
@@ -29,6 +31,7 @@ public class Rain {
     subscribers = new ArrayList<Player>();
     config = new Config();
     lastMessages = new ArrayList<String>();
+    rng = new Random();
     // sort colors by threshold
     Rain.config.colors.sort((a, b) -> a.getValue().compareTo(b.getValue()));
   }

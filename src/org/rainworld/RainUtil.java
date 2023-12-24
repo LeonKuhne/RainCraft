@@ -1,12 +1,11 @@
 package org.rainworld;
-import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -22,8 +21,6 @@ import org.rainworld.legacy.CloudBlock;
 
 public class RainUtil {
   static Map<Integer, Integer> sessions = new HashMap<Integer, Integer>();
-  private static Map<Double[], Double> cachedPoolTemperatures = new HashMap<Double[], Double>();
-  private static Map<AbstractMap.SimpleEntry<Double, Double[]>, Double[]> cachedReversePoolTemperatures = new HashMap<AbstractMap.SimpleEntry<Double, Double[]>, Double[]>();
 
   // THREADING
   //
@@ -156,8 +153,8 @@ public class RainUtil {
   public static Location RandomNear(Location loc, int radius) {
     // pick random location near player (x,z)
     Location groundLoc = loc.clone();
-    int locX = ThreadLocalRandom.current().nextInt(0, radius) - radius / 2;
-    int locZ = ThreadLocalRandom.current().nextInt(0, radius) - radius / 2;
+    int locX = Rain.rng.nextInt(radius) - radius / 2;
+    int locZ = Rain.rng.nextInt(radius) - radius / 2;
     groundLoc.add(locX, 0, locZ);
 
     // move height to ground
@@ -165,11 +162,8 @@ public class RainUtil {
   }
 
   public static Vector Random() {
-    return new Vector(
-        ThreadLocalRandom.current().nextDouble() * 2 - 1,
-        ThreadLocalRandom.current().nextDouble() * 2 - 1,
-        ThreadLocalRandom.current().nextDouble() * 2 - 1
-    );
+    Supplier<Double> rand = () -> Rain.rng.nextDouble() * 2 - 1;
+    return new Vector(rand.get(), rand.get(), rand.get());
   }
 
   /**
@@ -272,95 +266,18 @@ public class RainUtil {
     return chunk.getWorld().getHighestBlockAt(chunkLoc).getRelative(BlockFace.UP);
   }
 
-  public static double poolTemperature(Double[] temperatures) {
-    if (RainUtil.cachedPoolTemperatures.containsKey(temperatures)) {
-      return RainUtil.cachedPoolTemperatures.get(temperatures);
-    }
-
-    // get avg temperature
-    double totalTemperature = 0;
-    for (double temperature : temperatures) {
-      totalTemperature += temperature;
-    }
-    double averageTemperature = totalTemperature / 6.0;
-
-    // cache for next time
-    RainUtil.cachedPoolTemperatures.put(temperatures, averageTemperature);
-    return averageTemperature;
+  public static double average(double[] values) {
+    double sum = 0;
+    for (double val : values) { sum += val; }
+    return sum / values.length;
   }
 
-  public static double temperaturize(Block block) {
-    if (block.hasMetadata("temperature")) {
-      return block.getMetadata("temperature").get(0).asDouble();
+  public static double[] reversePoolAverage(double[] params) {
+    double[] neighbors = new double[params.length - 1];
+    double center = params[0];
+    for (int i = 0; i < neighbors.length; i++) {
+      neighbors[i] += (center - params[i+1]) * Rain.config.spreadFactor; 
     }
-    if (!RainUtil.isAir(block)) {
-      return 1;
-    }
-    return 0;
-  }
-
-  public static double humidify(Block block) {
-    if (block.hasMetadata("humidity")) {
-      return block.getMetadata("humidity").get(0).asDouble();
-    }
-    return 0;
-  }
-
-  public static double pressurize(Block block) {
-    double temperature = RainUtil.temperaturize(block);
-    // humidity lowers pressure
-    double humidity = RainUtil.humidify(block);
-    return temperature * (1 - humidity);
-  }
-
-  public static Double[] reversePoolTemperature(double temperature, Double[] temperatures) {
-    // use a tuple/pair/entry pair as key
-    if (RainUtil.cachedReversePoolTemperatures.containsKey(new AbstractMap.SimpleEntry<Double, Double[]>(temperature, temperatures))) {
-      return RainUtil.cachedReversePoolTemperatures.get(new AbstractMap.SimpleEntry<Double, Double[]>(temperature, temperatures));
-    }
-    Double[] newTemperatures = new Double[temperatures.length];
-    for (int i = 0; i < temperatures.length; i++) {
-      // dont change solids temperature (optional)
-      if (temperatures[i] == 0) {
-        newTemperatures[i] = null;
-        continue;
-      }
-      // remove average temperature
-      newTemperatures[i] = temperatures[i] + (temperatures[i] + temperature) / 2;
-    }
-
-    // cache for next time
-    RainUtil.cachedReversePoolTemperatures.put(new AbstractMap.SimpleEntry<Double, Double[]>(temperature, temperatures), newTemperatures);
-    return newTemperatures;
-  }
-
-  public static int heatDirection(Block posAxis, Block negAxis) {
-    double axisDelta = RainUtil.pressurize(posAxis) - RainUtil.pressurize(negAxis);
-    return (int) Math.round(axisDelta);
-  }
-
-  public static Block[] windDirection(Block block, int count) {
-    // follow the temperature gradient
-    Block[] neighbors = RainUtil.neighbors(block);
-    Vector velocity = new Vector(
-      heatDirection(neighbors[0], neighbors[1]),
-      heatDirection(neighbors[2], neighbors[3]),
-      heatDirection(neighbors[4], neighbors[5])
-    );
-    // collect blocks
-    Block[] nextBlocks = new Block[count];
-    int idx = 0;
-    while (idx < count) { 
-      Vector delta = null;
-      if (idx > 0) {
-        // remove delta from axisVelocities
-        delta = nextBlocks[idx-1].getLocation().toVector().subtract(block.getLocation().toVector());
-        velocity = velocity.subtract(delta);
-      }
-      // get next block
-      nextBlocks[idx] = block.getRelative(velocity.getBlockX(), velocity.getBlockY(), velocity.getBlockZ());
-      idx++;
-    }
-    return nextBlocks;
+    return neighbors;
   }
 }

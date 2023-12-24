@@ -10,4 +10,4 @@ website: info.dankpiss.art
 commands:
   rain: 
     description: "Let it rain!"
-    usage: /<command> [start|stop|cloud|heat|watch|ignore|config]
+    usage: /<command> [start|stop|cloud|watch|ignore|config]

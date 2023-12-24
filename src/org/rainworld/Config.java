@@ -37,14 +37,15 @@ public class Config {
   public double cloudSpawnThreshold = 0.95;
   // NEW
   public int colorScale = 3; 
-  public boolean showHeatMap = false;
+  public boolean showHeatMap = true;
   public double minTemperature = 1 / Math.pow(6, 27); // 6 sides, n blocks above from peak
   public int cloudHeight = 35;
   public int cloudThickness = 3;
   public double cloudMinTemperature = 1 / Math.pow(6, cloudHeight + cloudThickness);
   public double cloudMaxTemperature = 1 / Math.pow(6, cloudHeight);
   public double spawnHumidity = 0.5;
-  public double humiditySpreadThreshold = 0.5;
+  public double humiditySpreadThreshold = 0.5; // spread humidity if greater than this
+  public double spreadFactor = 0.0; // reverse pool by this factor
   public List<Entry<String, Double>> colors = new ArrayList<>();
   {
     // map blue->red stained glass materials to temperature thresholds
