@@ -5,15 +5,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
@@ -38,7 +37,9 @@ public class RainWorld extends JavaPlugin {
     
     temperatures = new TrackedGradient("temperature");
     temperatures.addDefault(block -> !RainUtil.isAir(block) ? 1. : null);
-    humidities = new TrackedGradient("humidity", humidity -> humidity > Rain.config.minHumidity);
+    //temperatures.untrackWhen(block -> true); // only track once
+    humidities = new TrackedGradient("humidity");
+    humidities.trackWhen(block -> humidities.read(block) > Rain.config.minHumidity);
 
     //
     // COMMANDS 
@@ -112,19 +113,10 @@ public class RainWorld extends JavaPlugin {
 
   // create a blue->red dome around the player to visualize temperature using stained glass
   private void loadTemperatures(Chunk chunk) {
-    // select topmost air
-    Set<Block> blocks = new HashSet<Block>();
-    for (Block block : RainUtil.topAirs(chunk)) {
-      blocks.add(block.getRelative(BlockFace.UP));
-    }
-    Rain.log(String.format("Found %d blocks to temper with", blocks.size()));
     Rain.log("assigning temperatures...");
+    Set<Block> filled = spreadTemperatures(chunk);
 
-    // fill chunk with temperatures
-    Set<Block> filled = new HashSet<Block>();
-    assignTemperatures(chunk, blocks, block -> filled.add(block));
-
-    // render temperatures with blocks
+    // render temperatures 
     for (Block block : filled) {
       double temperature = temperatures.read(block);
       if (Rain.config.showHeatMap) {
@@ -171,60 +163,49 @@ public class RainWorld extends JavaPlugin {
     // TODO generate cloud at pos
   }
 
-  // pool temperature into blocks metadata and recurse neighbors
-  // recursive algo; given blocks, apply temperature metadata
-  // -> refactor this to use a tracked gradient each loop
-  private void assignTemperatures(Chunk chunk, Set<Block> blocks, Consumer<Block> onCreated) { 
-    if (blocks.isEmpty()) { return; }
-    Rain.log(String.format("number of blocks to temper: %d", blocks.size()));
-    int rejectedGround = 0;
-    int rejectedTempered = 0;
-    int rejectedOutsideChunk = 0;
-    int rejectedTooCold = 0;
+  // pool average temperature into blocks metadata and recurse through neighbors
+  // assumes temperatures includes blocks to start
+  private Set<Block> spreadTemperatures(Chunk chunk) { 
+    Set<Block> filled = new HashSet<Block>();
 
-    List<Runnable> postActions = new ArrayList<Runnable>();
-    // collect neighbors
-    Set<Block> unvisited = new HashSet<Block>();
-    for (Block block : blocks) {
-      if (!RainUtil.isAir(block)) { rejectedGround++; continue; }
-      if (temperatures.contains(block)) { rejectedTempered++; continue; }
+    // start on ground
+    temperatures.track(RainUtil.topBlocks(chunk));
 
-      Block[] neighbors = RainUtil.neighbors(block);
+    // recurse through air
+    while (!temperatures.isEmpty()) {
+      Rain.log(String.format("processing: %d", temperatures.size()));
+      // collect nearby
+      Set<Block> neighbors = new HashSet<Block>();
+      temperatures.each(source -> {
+        for (Block block : RainUtil.neighbors(source)) {
+          neighbors.add(block);
+        }
+      // before releasing changes
+      // -> consider using parallel streams
+      }, () -> {
+        Set<Block> updated = neighbors
+        .stream()
+          .filter(block -> RainUtil.isAir(block))          // air
+          //.filter(block -> !temperatures.contains(block))  // not already evaluated (only processes recently if untracking set to true, could be used for deeper recursion if these are allowed even if filled already, aka use 'tracked or not filled')
+          .filter(block -> !filled.contains(block))      // (alt) not already evaluated
+          .filter(block -> block.getChunk().equals(chunk)) // in same chunk
+          .filter(block -> {
+            // pool temperature
+            double averageTemperature = temperatures.poolAverage(temperatures.neighbors(block));
+            // stop if too cold
+            if (averageTemperature < Rain.config.minTemperature) return false;
+            // assign temperature
+            temperatures.update(block, averageTemperature);
+            return true;
+          })
+        .collect(Collectors.toSet());
 
-      // pool average
-      double[] neighborTemps = temperatures.neighbors(block); 
-      double averageTemperature = temperatures.poolAverage(neighborTemps);
-      //double[] newTemps = temperatures.reversePoolAverage(averageTemperature, neighborTemps);
-
-      postActions.add(() -> {
-        // update center & neighbors
-        temperatures.update(block, averageTemperature);
-        //for (int i = 0; i < neighbors.length; i++) {
-        //  temperatures.update(neighbors[i], newTemps[i]);
-        //}
-        // advertise update
-        onCreated.accept(block);
+        // use a stream to process changes
+        filled.addAll(updated);
       });
-
-      // stop if block outside chunk
-      if (!block.getChunk().equals(chunk)) { rejectedOutsideChunk++; continue; }
-      // stop if temperature is too low
-      if (averageTemperature < Rain.config.minTemperature) { rejectedTooCold++; continue; }
-      // continue with neighbors
-      for (Block neighbor : neighbors) { unvisited.add(neighbor); }
     }
 
-    // complete postActions 
-    for (Runnable action : postActions) { action.run(); }
-
-    Rain.log(String.format("assignTemperatures: given %d blocks -> found %d neighbors", blocks.size(), unvisited.size()));
-    if (rejectedGround > 0) { Rain.log(String.format("-> %d blocks rejected for being on the ground", rejectedGround)); }
-    if (rejectedTempered > 0) { Rain.log(String.format("-> %d blocks rejected for already being tempered", rejectedTempered)); }
-    if (rejectedOutsideChunk > 0) { Rain.log(String.format("-> %d blocks rejected for being outside the chunk", rejectedOutsideChunk)); }
-    if (rejectedTooCold > 0) { Rain.log(String.format("-> %d blocks rejected for being too cold", rejectedTooCold)); }
-
-    // recurse
-    assignTemperatures(chunk, unvisited, onCreated);
+    return filled;
   }
 
   // follow the temperature gradient

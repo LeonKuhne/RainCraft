@@ -12,7 +12,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitTask;
@@ -251,19 +250,19 @@ public class RainUtil {
     return blocks;
   }
 
-  public static Set<Block> topAirs(Chunk playerChunk) {
+  public static Set<Block> topBlocks(Chunk playerChunk) {
     Set<Block> blocks = new HashSet<Block>();
     for (int x = 0; x < 16; x++) {
       for (int z = 0; z < 16; z++) {
-        blocks.add(topAir(playerChunk, x, z));
+        blocks.add(topBlock(playerChunk, x, z));
       }
     }
     return blocks;
   }
 
-  public static Block topAir(Chunk chunk, int x, int z) {
+  public static Block topBlock(Chunk chunk, int x, int z) {
     Location chunkLoc = chunk.getBlock(x, 0, z).getLocation();
-    return chunk.getWorld().getHighestBlockAt(chunkLoc).getRelative(BlockFace.UP);
+    return chunk.getWorld().getHighestBlockAt(chunkLoc);
   }
 
   public static double average(double[] values) {
