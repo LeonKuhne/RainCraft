@@ -46,6 +46,7 @@ public class Config {
   public double spawnHumidity = 0.5;
   public double humiditySpreadThreshold = 0.5; // spread humidity if greater than this
   public double spreadFactor = 0.0; // reverse pool by this factor
+  public double minHumidity = 0.01;
   public List<Entry<String, Double>> colors = new ArrayList<>();
   {
     // map blue->red stained glass materials to temperature thresholds

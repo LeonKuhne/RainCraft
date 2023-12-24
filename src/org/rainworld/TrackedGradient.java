@@ -17,14 +17,14 @@ public class TrackedGradient extends Gradient {
   private List<Runnable> postActions;
 
   TrackedGradient(String metadataKey) { this(metadataKey, null); }
-  TrackedGradient(String metadataKey, Function<Block, Boolean> trackFilter) { 
+  TrackedGradient(String metadataKey, Function<Double, Boolean> trackFilter) { 
     super(metadataKey);
     this.tracked = new HashSet<>();
     this.iterating = false;
     this.postActions = new ArrayList<>();
     // precompile filter
     if (trackFilter == null) trackMethod = tracked::add;
-    else trackMethod = block -> { if (trackFilter.apply(block)) tracked.add(block); };
+    else trackMethod = block -> { if (trackFilter.apply(read(block))) tracked.add(block); };
   }
 
   // track on update

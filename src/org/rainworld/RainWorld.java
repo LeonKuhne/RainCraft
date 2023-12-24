@@ -29,16 +29,16 @@ public class RainWorld extends JavaPlugin {
 
   private SimpleCommandMap commands;
   private Set<Chunk> loadedChunks;
-  private Gradient temperatures;
+  private TrackedGradient temperatures;
   private TrackedGradient humidities;
 
   @Override
   public void onEnable() {
     Rain.init(this);
     
-    temperatures = new Gradient("temperature");
+    temperatures = new TrackedGradient("temperature");
     temperatures.addDefault(block -> !RainUtil.isAir(block) ? 1. : null);
-    humidities = new TrackedGradient("humidity");
+    humidities = new TrackedGradient("humidity", humidity -> humidity > Rain.config.minHumidity);
 
     //
     // COMMANDS 
